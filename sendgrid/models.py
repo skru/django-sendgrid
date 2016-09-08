@@ -157,7 +157,7 @@ class Category(models.Model):
 		verbose_name = _("Category")
 		verbose_name_plural = _("Categories")
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.name
 
 
@@ -185,7 +185,7 @@ class Argument(models.Model):
 		verbose_name = _("Argument")
 		verbose_name_plural = _("Arguments")
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.key
 
 
@@ -247,7 +247,7 @@ class EmailMessage(models.Model):
 
 		return emailMessage
 
-	def __unicode__(self):
+	def __str__(self):
 		return "{0}".format(self.message_id)
 
 	def get_to_data(self):
@@ -315,7 +315,7 @@ class UniqueArgument(models.Model):
 		verbose_name = _("Unique Argument")
 		verbose_name_plural = _("Unique Arguments")
 
-	def __unicode__(self):
+	def __str__(self):
 		return "{key}: {value}".format(key=self.argument.key, value=self.value)
 
 	def get_value(self):
@@ -344,7 +344,7 @@ class EmailMessageSubjectData(models.Model):
 		verbose_name = _("Email Message Subject Data")
 		verbose_name_plural = _("Email Message Subject Data")
 
-	def __unicode__(self):
+	def __str__(self):
 		return "{0}".format(self.email_message)
 
 
@@ -356,7 +356,7 @@ class EmailMessageSendGridHeadersData(models.Model):
 		verbose_name = _("Email Message SendGrid Headers Data")
 		verbose_name_plural = _("Email Message SendGrid Headers Data")
 
-	def __unicode__(self):
+	def __str__(self):
 		return "{0}".format(self.email_message)
 
 
@@ -368,7 +368,7 @@ class EmailMessageExtraHeadersData(models.Model):
 		verbose_name = _("Email Message Extra Headers Data")
 		verbose_name_plural = _("Email Message Extra Headers Data")
 
-	def __unicode__(self):
+	def __str__(self):
 		return "{0}".format(self.email_message)
 
 
@@ -380,7 +380,7 @@ class EmailMessageBodyData(models.Model):
 		verbose_name = _("Email Message Body Data")
 		verbose_name_plural = _("Email Message Body Data")
 
-	def __unicode__(self):
+	def __str__(self):
 		return "{0}".format(self.email_message)
 
 
@@ -392,7 +392,7 @@ class EmailMessageAttachmentsData(models.Model):
 		verbose_name = _("Email Message Attachment Data")
 		verbose_name_plural = _("Email Message Attachments Data")
 
-	def __unicode__(self):
+	def __str__(self):
 		return "{0}".format(self.email_message)
 
 
@@ -404,7 +404,7 @@ class EmailMessageBccData(models.Model):
 		verbose_name = _("Email Message Bcc Data")
 		verbose_name_plural = _("Email Message Bcc Data")
 
-	def __unicode__(self):
+	def __str__(self):
 		return "{0}".format(self.email_message)
 
 
@@ -416,7 +416,7 @@ class EmailMessageCcData(models.Model):
 		verbose_name = _("Email Message Cc Data")
 		verbose_name_plural = _("Email Message Cc Data")
 
-	def __unicode__(self):
+	def __str__(self):
 		return "{0}".format(self.email_message)
 
 
@@ -428,14 +428,14 @@ class EmailMessageToData(models.Model):
 		verbose_name = _("Email Message To Data")
 		verbose_name_plural = _("Email Message To Data")
 
-	def __unicode__(self):
+	def __str__(self):
 		return "{0}".format(self.email_message)
 
 
 class EventType(models.Model):
 	name = models.CharField(unique=True, max_length=EVENT_NAME_MAX_LENGTH)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.name
 
 
@@ -453,7 +453,7 @@ class Event(models.Model):
 		verbose_name = _("Event")
 		verbose_name_plural = _("Events")
 
-	def __unicode__(self):
+	def __str__(self):
 		return u"{0} - {1}".format(self.email_message, self.event_type)
 
 class ClickUrl(models.Model):
@@ -466,8 +466,8 @@ class ClickEvent(Event):
 		verbose_name = ("Click Event")
 		verbose_name_plural = ("Click Events")
 
-	def __unicode__(self):
-		return u"{0} - {1}".format(super(ClickEvent,self).__unicode__(),self.url)
+	def __str__(self):
+		return u"{0} - {1}".format(super(ClickEvent,self).__str__(),self.url)
 
 	def get_url(self):
 		return self.click_url.url
@@ -493,8 +493,8 @@ class BounceEvent(Event):
 		verbose_name = ("Bounce Event")
 		verbose_name_plural = ("Bounce Events")
 
-	def __unicode__(self):
-		return u"{0} - {1}".format(super(self,BounceEvent).__unicode__(),reason)
+	def __str__(self):
+		return u"{0} - {1}".format(super(self,BounceEvent).__str__(),reason)
 
 	def get_reason(self):
 		return self.bounce_reason.reason
