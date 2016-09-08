@@ -9,7 +9,7 @@ from django.http import HttpResponseBadRequest
 from django.http import HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 
-from .signals import sendgrid_event_recieved
+from .signals import sendgrid_event_recieved, sendgrid_event_created
 
 from sendgrid.models import EmailMessage, Event, ClickEvent, DeferredEvent, DroppedEvent, DeliverredEvent, BounceEvent, EventType
 from sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP, EVENT_MODEL_NAMES
@@ -80,6 +80,7 @@ def handle_single_event_request(request):
 				logger.debug("Expected post param {key} for Sendgrid Event {event} not found".format(key=key,event=event))
 		event_model = eval(EVENT_MODEL_NAMES[event]) if event in EVENT_MODEL_NAMES.keys() else Event
 		eventObj = event_model.objects.create(**event_params)
+		sendgrid_event_created.send(sender=None, request=request, event=eventObj)
 
 	response = HttpResponse()
 
