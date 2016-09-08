@@ -1,21 +1,19 @@
 from __future__ import absolute_import
 
+import json
 import logging
 from datetime import datetime
+
 from django import get_version as django_version
 from django.conf import settings
 from django.http import HttpResponse
-from django.http import HttpResponseBadRequest
 from django.http import HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 
-from .signals import sendgrid_event_recieved, sendgrid_event_created
-
-from django_sendgrid.models import EmailMessage, Event, ClickEvent, DeferredEvent, DroppedEvent, DeliverredEvent, BounceEvent, EventType
 from django_sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP, EVENT_MODEL_NAMES
+from django_sendgrid.models import EmailMessage, Event, EventType
 from django_sendgrid.settings import SENDGRID_CREATE_MISSING_EMAIL_MESSAGES
-
-import json
+from .signals import sendgrid_event_recieved, sendgrid_event_created
 
 POST_EVENTS_RESPONSE_STATUS_CODE = getattr(settings, "POST_EVENT_HANDLER_RESPONSE_STATUS_CODE", 200)
 
@@ -164,7 +162,6 @@ def download_attachments(request, message_id):
     """
     Returns an HttpResponse containing the zipped attachments.
     """
-    import zipfile
     from contextlib import closing
     from django.shortcuts import get_object_or_404
     try:

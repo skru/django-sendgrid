@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-import os
-import sys
 import codecs
+import os
 
 try:
     from setuptools import setup, find_packages

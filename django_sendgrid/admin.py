@@ -7,8 +7,8 @@ from .models import Argument
 from .models import Category
 from .models import EmailMessage
 from .models import EmailMessageAttachmentsData
-from .models import EmailMessageBodyData
 from .models import EmailMessageBccData
+from .models import EmailMessageBodyData
 from .models import EmailMessageCcData
 from .models import EmailMessageExtraHeadersData
 from .models import EmailMessageSendGridHeadersData

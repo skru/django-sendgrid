@@ -2,15 +2,12 @@ import logging
 
 from django.contrib.auth.models import User
 # from django.core.mail import get_connection
-from django.core.mail import EmailMessage
 # from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # django-sendgrid
 # from django_sendgrid.mail import get_sendgrid_connection
-from django_sendgrid.mail import send_sendgrid_mail
-from django_sendgrid.mail import send_sendgrid_mail
 from django_sendgrid.message import SendGridEmailMessage
 
 

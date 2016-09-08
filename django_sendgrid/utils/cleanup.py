@@ -6,7 +6,6 @@ from django.utils.timezone import now as now_utc
 
 from django_sendgrid.models import EmailMessage, EmailMessageBodyData
 
-
 ONE_DAY = datetime.timedelta(days=1)
 ONE_WEEK = datetime.timedelta(weeks=1)
 

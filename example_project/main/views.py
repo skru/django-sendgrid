@@ -4,12 +4,10 @@ import logging
 
 from django.contrib import messages
 from django.core.context_processors import csrf
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 
 # django-sendgrid
-from django_sendgrid.mail import send_sendgrid_mail
 from django_sendgrid.message import SendGridEmailMessage
 from django_sendgrid.message import SendGridEmailMultiAlternatives
 from django_sendgrid.utils import filterutils

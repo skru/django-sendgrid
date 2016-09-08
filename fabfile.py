@@ -1,12 +1,9 @@
 import os
-import sys
 import time
 
 import fabric
 from fabric.api import task, run, cd, env, hide, prefix
-from fabric.contrib.files import upload_template, exists
 from fabric.operations import put, open_shell
-
 
 PROJECT_ROOT = os.path.dirname(__file__)
 
