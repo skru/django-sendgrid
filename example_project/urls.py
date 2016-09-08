@@ -5,13 +5,13 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = [
-	# Examples:
-	# url(r'^$', 'django.views.generic.simple.redirect_to', {'url': '/sendgrid/'}, name='home'),
-	url(r"^$", include("main.urls"), name="index"),
-	url(r"^sendgrid/", include("django_sendgrid.urls")),
-	# Uncomment the admin/doc line below to enable admin documentation:
-	# url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    # Examples:
+    # url(r'^$', 'django.views.generic.simple.redirect_to', {'url': '/sendgrid/'}, name='home'),
+    url(r"^$", include("main.urls"), name="index"),
+    url(r"^sendgrid/", include("django_sendgrid.urls")),
+    # Uncomment the admin/doc line below to enable admin documentation:
+    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-	# Uncomment the next line to enable the admin:
-	url(r'^admin/', include(admin.site.urls)),
+    # Uncomment the next line to enable the admin:
+    url(r'^admin/', include(admin.site.urls)),
 ]
