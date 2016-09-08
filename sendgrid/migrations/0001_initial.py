@@ -6,7 +6,7 @@ from django.core.management import call_command
 
 
 def load_fixture(apps, schema_editor):
-    call_command('loaddata', 'sendgrid/fixtures/initial_data.json')
+    call_command('loaddata', 'sendgrid_eventtype.json')
 
 
 class Migration(migrations.Migration):
