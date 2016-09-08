@@ -38,7 +38,7 @@ class SendGridEmailMessageMixin:
 		logging.debug(str(self.extra_headers))
 
 		return self.extra_headers
-		
+
 	def _update_unique_args(self, uniqueArgs):
 		"""docstring for _update_unique_args"""
 		oldUniqueArgs = self.sendgrid_headers.data.get("unique_args", None)
@@ -53,7 +53,7 @@ class SendGridEmailMessageMixin:
 		Updates the headers.
 		"""
 		return self._update_headers_with_sendgrid_headers(*args, **kwargs)
-		
+
 	def get_category(self):
 		"""docstring for get_category"""
 		return self.sendgrid_headers.data["category"]
@@ -63,25 +63,25 @@ class SendGridEmailMessageMixin:
 		"""docstring for get_unique_args"""
 		return self.sendgrid_headers.data.get("unique_args", None)
 	unique_args = property(get_unique_args)
-	
+
 	def setup_connection(self):
 		"""docstring for setup_connection"""
 		# Set up the connection
 		connection = get_sendgrid_connection()
 		self.connection = connection
 		logger.debug("Connection: {c}".format(c=connection))
-	
+
 	def prep_message_for_sending(self):
 		"""docstring for prep_message_for_sending"""
 		self.setup_connection()
-		
+
 		# now = tz.localize(datetime.datetime.strptime(timestamp[:26], POSTMARK_DATETIME_STRING)).astimezone(pytz.utc)
 		uniqueArgs = {
 			"message_id": str(self._message_id),
 			# "submition_time": time.time(),
 		}
 		self._update_unique_args(uniqueArgs)
-		
+
 		self.update_headers()
 
 	def get_message_id(self):
@@ -92,7 +92,7 @@ class SendGridEmailMessageMixin:
 class SendGridEmailMessage(SendGridEmailMessageMixin, EmailMessage):
 	"""
 	Adapts Django's ``EmailMessage`` for use with SendGrid.
-	
+
 	>>> from sendgrid.message import SendGridEmailMessage
 	>>> myEmail = "rbalfanz@gmail.com"
 	>>> mySendGridCategory = "django-sendgrid"
@@ -100,7 +100,10 @@ class SendGridEmailMessage(SendGridEmailMessageMixin, EmailMessage):
 	>>> e.sendgrid_headers.setCategory(mySendGridCategory)
 	>>> response = e.send()
 	"""
-	
+	class Meta:
+		verbose_name = _("SendGrid Email Message")
+		verbose_name_plural = _("SendGrid Email Messages")
+
 	def __init__(self, *args, **kwargs):
 		"""
 		Initialize the object.
@@ -108,16 +111,16 @@ class SendGridEmailMessage(SendGridEmailMessageMixin, EmailMessage):
 		self.sendgrid_headers = SmtpApiHeader()
 		self._message_id = uuid.uuid4()
 		super(SendGridEmailMessage, self).__init__(*args, **kwargs)
-		
+
 	def send(self, *args, **kwargs):
 		"""Sends the email message."""
 		self.prep_message_for_sending()
-		
+
 		save_email_message(sender=self,message=self,response=None)
 		response = super(SendGridEmailMessage, self).send(*args, **kwargs)
 		logger.debug("Tried to send an email with SendGrid and got response {r}".format(r=response))
 		sendgrid_email_sent.send(sender=self, message=self, response=response)
-		
+
 		return response
 
 	def get_message_id(self):
@@ -129,16 +132,19 @@ class SendGridEmailMultiAlternatives(SendGridEmailMessageMixin, EmailMultiAltern
 	"""
 	Adapts Django's ``EmailMultiAlternatives`` for use with SendGrid.
 	"""
-	
+	class Meta:
+		verbose_name = _("SendGrid Email Multi Alternatives")
+		verbose_name_plural = _("SendGrid Email Multi Alternatives")
+
 	def __init__(self, *args, **kwargs):
 		self.sendgrid_headers = SmtpApiHeader()
 		self._message_id = uuid.uuid4()
 		super(SendGridEmailMultiAlternatives, self).__init__(*args, **kwargs)
-		
+
 	def send(self, *args, **kwargs):
 		"""Sends the email message."""
 		self.prep_message_for_sending()
-		
+
 		save_email_message(sender=self,message=self,response=None)
 		response = super(SendGridEmailMultiAlternatives, self).send(*args, **kwargs)
 		logger.debug("Tried to send a multialternatives email with SendGrid and got response {r}".format(r=response))

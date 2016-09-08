@@ -435,6 +435,10 @@ class EmailMessageToData(models.Model):
 class EventType(models.Model):
 	name = models.CharField(unique=True, max_length=EVENT_NAME_MAX_LENGTH)
 
+	class Meta:
+		verbose_name = _("Event Type")
+		verbose_name_plural = _("Event Types")
+
 	def __str__(self):
 		return self.name
 
@@ -459,6 +463,10 @@ class Event(models.Model):
 class ClickUrl(models.Model):
 	url = models.TextField()
 
+	class Meta:
+		verbose_name = _("Click Url")
+		verbose_name_plural = _("Click Urls")
+
 class ClickEvent(Event):
 	click_url = models.ForeignKey(ClickUrl)
 
@@ -482,8 +490,16 @@ class ClickEvent(Event):
 class BounceReason(models.Model):
 	reason = models.TextField()
 
+	class Meta:
+		verbose_name = _("Bounce Reason")
+		verbose_name_plural = _("Bounce Reasons")
+
 class BounceType(models.Model):
 	type = models.CharField(max_length=32,unique=True)
+
+	class Meta:
+		verbose_name = _("Bounce Type")
+		verbose_name_plural = _("Bounce Types")
 
 class BounceEvent(Event):
 	status = models.CharField(max_length=16)
@@ -514,8 +530,20 @@ class DeferredEvent(Event):
 	response = models.TextField()
 	attempt = models.IntegerField()
 
+	class Meta:
+		verbose_name = _("Deferred Event")
+		verbose_name_plural = _("Deferred Events")
+
 class DroppedEvent(Event):
 	reason = models.CharField(max_length=255)
 
+	class Meta:
+		verbose_name = _("Dropped Event")
+		verbose_name_plural = _("Dropped Events")
+
 class DeliverredEvent(Event):
 	response = models.TextField()
+
+	class Meta:
+		verbose_name = _("Deliverred Event")
+		verbose_name_plural = _("Deliverred Events")
