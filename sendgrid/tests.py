@@ -477,7 +477,7 @@ class EventPostTests(TestCase):
 		Checks that every EXTRA_FIELD is saved
 		"""
 		for event_type, event_model_name in EVENT_MODEL_NAMES.items():
-			print "Testing {0} event".format(event_type)
+			print("Testing {0} event".format(event_type))
 			event_model = eval(EVENT_MODEL_NAMES[event_type]) if event_type in EVENT_MODEL_NAMES.keys() else Event
 			event_count_before = event_model.objects.count()
 			response = post_test_event(event_type,event_model_name,self.email_message)

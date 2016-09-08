@@ -13,7 +13,7 @@ def post_test_event(event_type,event_model_name,email_message):
 	}
 
 	for key in EVENT_TYPES_EXTRA_FIELDS_MAP[event_type.upper()]:
-		print "Adding Extra Field {0}".format(key)
+		print("Adding Extra Field {0}".format(key))
 		if key == "attempt":
 			event_data[key] = 3
 		else:
