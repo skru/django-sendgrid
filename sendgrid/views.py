@@ -26,9 +26,9 @@ def handle_single_event_request(request):
 	Handles single event POST requests.
 	"""
 	if type(request) == dict:
-  		eventData = request
-  	else:
- 		eventData = request.POST
+		eventData = request
+	else:
+		eventData = request.POST
 
 	# Parameters that are always passed with each event
 	email = eventData.get("email", None)
@@ -95,16 +95,16 @@ def handle_batched_events_request(request):
 		{"email":"foo@bar.com","timestamp":1322000096,"unique_arg":"my unique arg","event":"open"}
 
 	"""
- 	from distutils.version import LooseVersion as V
- 	current_django_version = V(django_version())
- 	if current_django_version >= V('1.4'):
- 		events = json.loads(request.body)
- 	else:
+	from distutils.version import LooseVersion as V
+	current_django_version = V(django_version())
+	if current_django_version >= V('1.4'):
+		events = json.loads(request.body)
+	else:
 		events = json.loads(request.raw_post_data)
 
- 	for event in events:
- 		handle_single_event_request(event)
- 	response = HttpResponse()
+	for event in events:
+		handle_single_event_request(event)
+	response = HttpResponse()
 	return response
 
 def clean_response(response):
