@@ -1,13 +1,9 @@
 import datetime
 from optparse import make_option
 
-from django.core.management.base import BaseCommand, CommandError
-from django.utils.timezone import now as now_utc
+from django.core.management.base import BaseCommand
 
-from django_sendgrid.models import EmailMessage
-from django_sendgrid.models import EmailMessageBodyData
 from django_sendgrid.utils.cleanup import cleanup_email_message_body_data
-from django_sendgrid.utils.cleanup import delete_email_message_body_data
 
 ONE_DAY = datetime.timedelta(days=1)
 ONE_WEEK = datetime.timedelta(weeks=1)

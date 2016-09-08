@@ -5,9 +5,6 @@ try:
 except:
     from django.conf.urls.defaults import patterns, include, url
 
-from .views import listener
-
-
 urlpatterns = patterns('',
     url(r"^events/$", "django_sendgrid.views.listener", name="sendgrid_post_event"),
     url(r"^messages/(?P<message_id>[-\w]+)/attachments/$",

@@ -1,7 +1,8 @@
-from django.test.client import Client
-from django_sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP
 from django.core.urlresolvers import reverse
+from django.test.client import Client
 from django.utils.http import urlencode
+
+from django_sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP
 
 client = Client()
 def post_test_event(event_type,event_model_name,email_message):

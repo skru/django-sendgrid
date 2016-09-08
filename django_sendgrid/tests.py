@@ -2,13 +2,11 @@ from __future__ import absolute_import
 
 from collections import defaultdict
 
-from django.conf import settings
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.dispatch import receiver
 from django.test import TestCase
 from django.test.client import Client
-from django.utils.http import urlencode
 
 from .constants import EVENT_TYPES_EXTRA_FIELDS_MAP, EVENT_MODEL_NAMES, UNIQUE_ARGS_STORED_FOR_EVENTS_WITHOUT_MESSAGE_ID
 from .mail import get_sendgrid_connection
@@ -17,8 +15,8 @@ from .message import SendGridEmailMessage
 from .message import SendGridEmailMultiAlternatives
 from .models import Argument
 from .models import Category
-from .models import Event, ClickEvent, BounceEvent, DeferredEvent, DroppedEvent, DeliverredEvent, EmailMessage as EmailMessageModel
 from .models import EmailMessageAttachmentsData
+from .models import Event, EmailMessage as EmailMessageModel
 from .models import EventType
 from .models import UniqueArgument
 from .settings import SENDGRID_CREATE_MISSING_EMAIL_MESSAGES

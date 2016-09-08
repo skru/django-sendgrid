@@ -1,6 +1,4 @@
-import datetime
 import logging
-import time
 import urllib
 try:
     import urllib.request as urllib2
@@ -158,7 +156,6 @@ def zip_files(files):
     >>> zip = zip_files(files)
     """
     import zipfile
-    from contextlib import closing
 
     buffer = StringIO.StringIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zio:
