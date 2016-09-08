@@ -8,10 +8,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # django-sendgrid
-# from sendgrid.mail import get_sendgrid_connection
-from sendgrid.mail import send_sendgrid_mail
-from sendgrid.mail import send_sendgrid_mail
-from sendgrid.message import SendGridEmailMessage
+# from django_sendgrid.mail import get_sendgrid_connection
+from django_sendgrid.mail import send_sendgrid_mail
+from django_sendgrid.mail import send_sendgrid_mail
+from django_sendgrid.message import SendGridEmailMessage
 
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ def get_user(user):
 				_user = User.objects.get(id=user)
 			except User.DoesNotExist as e:
 				logger.exception("Caught exception: {error}".format(error=e))
-				
+
 	return _user
 
 def send_registration_email_to_new_user(user, emailOptions=REGISTRATION_EMAIL_SPEC):
@@ -48,7 +48,7 @@ def send_registration_email_to_new_user(user, emailOptions=REGISTRATION_EMAIL_SP
 	Sends a registration email to ``user``.
 	"""
 	user = get_user(user)
-	
+
 	registrationEmail = SendGridEmailMessage(
 		to=[user.email],
 		**emailOptions
@@ -56,7 +56,7 @@ def send_registration_email_to_new_user(user, emailOptions=REGISTRATION_EMAIL_SP
 	registrationEmail.sendgrid_headers.setCategory("Registration")
 	registrationEmail.sendgrid_headers.setUniqueArgs({"user_id": user.id})
 	response = registrationEmail.send()
-	
+
 	return response
 
 @receiver(post_save, sender=User)
@@ -65,7 +65,7 @@ def send_new_user_email(sender, instance, created, raw, using, **kwargs):
 	if created:
 		# Send a custom email, with, for example, a category.
 		send_registration_email_to_new_user(instance)
-		
+
 		# Send directly using ``send_sendgrid_mail`` shortcut.
 		# send_sendgrid_mail(
 		# 	recipient_list=[instance.username],

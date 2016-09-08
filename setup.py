@@ -10,7 +10,7 @@ except ImportError:
 	use_setuptools()
 	from setuptools import setup, find_packages
 
-import sendgrid as distmeta
+import django_sendgrid as distmeta
 
 packages = find_packages(exclude=("example_project",))
 data_files = []
@@ -18,7 +18,7 @@ root_dir = os.path.dirname(__file__)
 
 if root_dir != '':
 	os.chdir(root_dir)
-src_dir = "sendgrid"
+src_dir = "django_sendgrid"
 
 if os.path.exists("README.rst"):
 	long_description = codecs.open("README.rst", "r", "utf-8").read()

@@ -9,10 +9,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 
 # django-sendgrid
-from sendgrid.mail import send_sendgrid_mail
-from sendgrid.message import SendGridEmailMessage
-from sendgrid.message import SendGridEmailMultiAlternatives
-from sendgrid.utils import filterutils
+from django_sendgrid.mail import send_sendgrid_mail
+from django_sendgrid.message import SendGridEmailMessage
+from django_sendgrid.message import SendGridEmailMultiAlternatives
+from django_sendgrid.utils import filterutils
 
 # example_project
 from .forms import EmailForm
@@ -55,7 +55,7 @@ def send_simple_email(request):
 					from_email,
 					recipient_list,
 				)
-				
+
 			if categories:
 				logger.debug("Categories {c} were given".format(c=categories))
 				# The SendGrid Event API will POST different data for single/multiple category messages.
@@ -64,20 +64,20 @@ def send_simple_email(request):
 				elif len(categories) > 1:
 					sendGridEmail.sendgrid_headers.setCategory(categories)
 				sendGridEmail.update_headers()
-				
+
 			filterSpec = {}
 			if enable_gravatar:
 				logger.debug("Enable Gravatar was selected")
 				filterSpec["gravatar"] = {
 					"enable": 1
 				}
-				
+
 			if enable_gravatar:
 				logger.debug("Enable click tracking was selected")
 				filterSpec["clicktrack"] = {
 					"enable": 1
 				}
-				
+
 			if add_unsubscribe_link:
 				logger.debug("Add unsubscribe link was selected")
 				# sendGridEmail.sendgrid_headers.add
@@ -85,10 +85,10 @@ def send_simple_email(request):
 					"enable": 1,
 					"text/html": "<p>Unsubscribe <%Here%></p>",
 				}
-				
+
 			if filterSpec:
 				filterutils.update_filters(sendGridEmail, filterSpec, validate=True)
-				
+
 			logger.debug("Sending SendGrid email {e}".format(e=sendGridEmail))
 			response = sendGridEmail.send()
 			logger.debug("Response {r}".format(r=response))

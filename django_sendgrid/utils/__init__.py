@@ -19,7 +19,7 @@ except ImportError:
 from django.conf import settings
 from django.core import mail
 
-# from sendgrid.models import EmailMessage
+# from django_sendgrid.models import EmailMessage
 
 
 SENDGRID_EMAIL_USERNAME = getattr(settings, "SENDGRID_EMAIL_USERNAME", None)

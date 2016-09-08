@@ -1,5 +1,5 @@
 from django.test.client import Client
-from sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP
+from django_sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP
 from django.core.urlresolvers import reverse
 from django.utils.http import urlencode
 

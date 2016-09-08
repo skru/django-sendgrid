@@ -11,9 +11,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .signals import sendgrid_event_recieved, sendgrid_event_created
 
-from sendgrid.models import EmailMessage, Event, ClickEvent, DeferredEvent, DroppedEvent, DeliverredEvent, BounceEvent, EventType
-from sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP, EVENT_MODEL_NAMES
-from sendgrid.settings import SENDGRID_CREATE_MISSING_EMAIL_MESSAGES
+from django_sendgrid.models import EmailMessage, Event, ClickEvent, DeferredEvent, DroppedEvent, DeliverredEvent, BounceEvent, EventType
+from django_sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP, EVENT_MODEL_NAMES
+from django_sendgrid.settings import SENDGRID_CREATE_MISSING_EMAIL_MESSAGES
 
 import json
 
@@ -172,7 +172,7 @@ def download_attachments(request, message_id):
 	except ImportError:
 		from django.utils import simplejson as json
 
-	from sendgrid.utils import zip_files
+	from django_sendgrid.utils import zip_files
 
 	emailMessage = get_object_or_404(EmailMessage, message_id=message_id)
 

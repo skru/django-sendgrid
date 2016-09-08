@@ -94,7 +94,7 @@ class SendGridEmailMessage(SendGridEmailMessageMixin, EmailMessage):
 	"""
 	Adapts Django's ``EmailMessage`` for use with SendGrid.
 
-	>>> from sendgrid.message import SendGridEmailMessage
+	>>> from django_sendgrid.message import SendGridEmailMessage
 	>>> myEmail = "rbalfanz@gmail.com"
 	>>> mySendGridCategory = "django-sendgrid"
 	>>> e = SendGridEmailMessage("Subject", "Message", myEmail, [myEmail], headers={"Reply-To": myEmail})

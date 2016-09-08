@@ -362,7 +362,7 @@ class UpdateFiltersTests(TestCase):
 # 		self.assertEqual(original, result)
 
 # 	def test_with_message_id(self):
-# 		from sendgrid.models import EmailMessage as SGEmailMessage
+# 		from django_sendgrid.models import EmailMessage as SGEmailMessage
 
 # 		original = SGEmailMessage.objects.create()
 # 		result = get_email_message(original.message_id)

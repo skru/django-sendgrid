@@ -4,7 +4,7 @@ import time
 
 from django.utils.timezone import now as now_utc
 
-from sendgrid.models import EmailMessage, EmailMessageBodyData
+from django_sendgrid.models import EmailMessage, EmailMessageBodyData
 
 
 ONE_DAY = datetime.timedelta(days=1)

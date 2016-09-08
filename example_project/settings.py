@@ -102,7 +102,7 @@ MIDDLEWARE_CLASSES = (
 	'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
-ROOT_URLCONF = 'example_project.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
 	# Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -121,8 +121,8 @@ INSTALLED_APPS = (
 	'django.contrib.admin',
 	# Uncomment the next line to enable admin documentation:
 	# 'django.contrib.admindocs',
-	'south',
-	'sendgrid',
+	# 'south',
+	'django_sendgrid',
 	'debug_toolbar',
 	'main',
 )
@@ -167,7 +167,7 @@ INTERNAL_IPS = ('127.0.0.1',)
 # django-sendgrid
 # ---------------
 
-SENDGRID_EMAIL_BACKEND = "sendgrid.backends.SendGridEmailBackend"
+SENDGRID_EMAIL_BACKEND = "django_sendgrid.backends.SendGridEmailBackend"
 EMAIL_BACKEND = SENDGRID_EMAIL_BACKEND
 SENDGRID_EMAIL_HOST = "smtp.sendgrid.net"
 SENDGRID_EMAIL_PORT = 587

@@ -49,7 +49,7 @@ Don't forget to migrate::
 
 The API is similar to that of Django's; create a ``SendGridEmailMessage`` and send it::
 
-	>>> from sendgrid.message import SendGridEmailMessage
+	>>> from django_sendgrid.message import SendGridEmailMessage
 	>>> email = SendGridEmailMessage('Subject', 'Body', 'ryan@ryanbalfanz.net', ['ryan@ryanbalfanz.net'])
 	>>> email.send()
 
