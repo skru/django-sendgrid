@@ -99,7 +99,7 @@ def handle_batched_events_request(request):
 	from distutils.version import LooseVersion as V
 	current_django_version = V(django_version())
 	if current_django_version >= V('1.4'):
-		events = json.loads(request.body)
+		events = json.loads(request.body.decode())
 	else:
 		events = json.loads(request.raw_post_data)
 
