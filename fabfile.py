@@ -3,7 +3,7 @@ import sys
 import time
 
 import fabric
-from fabric.api import *
+from fabric.api import task, run, cd, env, hide, prefix
 from fabric.contrib.files import upload_template, exists
 from fabric.operations import put, open_shell
 
@@ -122,7 +122,11 @@ def put_files(files):
 		put(localPath, remotePath)
 
 def get_url_open_time(url):
-	import urllib2
+	try:
+		import urllib.request as urllib2
+	except ImportError:
+		import urllib2
+
 
 	startTime = time.time()
 	urllib2.urlopen(url)
@@ -157,7 +161,7 @@ def update_settings():
 	elapsedSeconds = time.time() - startTime
 	print("Updated in {s} seconds!".format(s=elapsedSeconds))
 
-	print time_get_url(WEBFACTION_WEBSITE_URL, n=3)
+	print(time_get_url(WEBFACTION_WEBSITE_URL, n=3))
 
 @task
 def deploy(branch):
@@ -191,7 +195,7 @@ def deploy(branch):
 	elapsedSeconds = time.time() - startTime
 	print("Deployed in {s} seconds!".format(s=elapsedSeconds))
 
-	print time_get_url(WEBFACTION_WEBSITE_URL, n=3)
+	print(time_get_url(WEBFACTION_WEBSITE_URL, n=3))
 
 def watch_logs(prefix="access", n=10, follow=False):
 	"""docstring for watch_logs"""
@@ -244,7 +248,7 @@ def logs(logType="access"):
 		# f(n, follow)
 	finally:
 		elapsedSeconds = time.time() - startTime
-		print "Elapsed time (s): {n}".format(n=elapsedSeconds)
+		print("Elapsed time (s): {n}".format(n=elapsedSeconds))
 
 @task
 def shell(*args, **kwargs):
