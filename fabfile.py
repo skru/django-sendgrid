@@ -36,9 +36,11 @@ env.SENDGRID_EMAIL_PASSWORD = os.getenv("SENDGRID_EMAIL_PASSWORD")
 
 WEBFACTION_DJANGO_PROJECT_ROOT = os.path.join(env.project_dir, "example_project")
 
+
 @task
 def release():
     fabric.operations.local("python setup.py sdist register upload")
+
 
 @task
 def pull():
@@ -47,6 +49,7 @@ def pull():
     """
     with cd(os.path.join(env.project_dir, REPOSITORY_NAME)):
         run("git pull")
+
 
 @task
 def checkout(remote=None, branch="master"):
@@ -61,11 +64,13 @@ def checkout(remote=None, branch="master"):
 
         run(checkoutCmd)
 
+
 @task
 def run_tests(surpress="output"):
     with hide(surpress):
         with cd(os.path.join(env.project_dir, REPOSITORY_NAME, "example_project")):
             run("{python} manage.py test".format(python=env.python_executable))
+
 
 @task
 def syncdb():
@@ -74,6 +79,7 @@ def syncdb():
     """
     with cd(os.path.join(env.project_dir, REPOSITORY_NAME, "example_project")):
         run("{python} manage.py syncdb".format(python=env.python_executable))
+
 
 @task
 def restart_apache():
@@ -89,9 +95,11 @@ def restart_apache():
         with cd(env.project_dir):
             run("./apache2/bin/restart")
 
+
 @task
 def get_memory_usage():
     run("ps -u {user} -o rss,command".format(user=WEBFACTION_USERNAME))
+
 
 @task
 def debug_on(filepath=None):
@@ -110,6 +118,7 @@ def debug_off(filepath=None):
     run(cmd)
     restart_apache()
 
+
 def put_files(files):
     """
     Puts files on a remote host.
@@ -118,18 +127,19 @@ def put_files(files):
         localPath, remotePath = paths["local"], paths["remote"]
         put(localPath, remotePath)
 
+
 def get_url_open_time(url):
     try:
         import urllib.request as urllib2
     except ImportError:
         import urllib2
 
-
     startTime = time.time()
     urllib2.urlopen(url)
     elapsedSeconds = time.time() - startTime
 
     return elapsedSeconds
+
 
 def time_get_url(url, n=1):
     avg = lambda s: sum(s) / len(s)
@@ -142,6 +152,7 @@ def time_get_url(url, n=1):
 
     result = min(timings), avg(timings), max(timings)
     return result
+
 
 @task
 def update_settings():
@@ -159,6 +170,7 @@ def update_settings():
     print("Updated in {s} seconds!".format(s=elapsedSeconds))
 
     print(time_get_url(WEBFACTION_WEBSITE_URL, n=3))
+
 
 @task
 def deploy(branch):
@@ -194,6 +206,7 @@ def deploy(branch):
 
     print(time_get_url(WEBFACTION_WEBSITE_URL, n=3))
 
+
 def watch_logs(prefix="access", n=10, follow=False):
     """docstring for watch_logs"""
 
@@ -213,16 +226,20 @@ def watch_logs(prefix="access", n=10, follow=False):
 
         run(cmd)
 
+
 @task
 def access_logs(n=10, follow=True):
     watch_logs("access", n, follow)
+
 
 @task
 def error_logs(n=10, follow=True):
     watch_logs("error", n, follow)
 
+
 def django_logs(n=10, follow=True):
     watch_logs("django", n, follow)
+
 
 @task
 def logs(logType="access"):
@@ -246,6 +263,7 @@ def logs(logType="access"):
     finally:
         elapsedSeconds = time.time() - startTime
         print("Elapsed time (s): {n}".format(n=elapsedSeconds))
+
 
 @task
 def shell(*args, **kwargs):
