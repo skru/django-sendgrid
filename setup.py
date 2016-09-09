@@ -34,8 +34,8 @@ setup(
     platforms=["any"],
     # license="BSD",
     packages=packages,
-    package_dir={'sendgrid': 'sendgrid'},
-    package_data={'sendgrid': ['fixtures/initial_data.json']},
+    package_dir={'django_sendgrid': 'django_sendgrid'},
+    package_data={'django_sendgrid': ['fixtures/sendgrid_eventtype.json']},
     data_files=data_files,
     long_description=long_description,
     install_requires=[
