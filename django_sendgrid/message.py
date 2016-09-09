@@ -9,10 +9,10 @@ from django.core.mail.message import EmailMultiAlternatives
 from django.utils.translation import ugettext_lazy as _
 
 # django-sendgrid imports
-from .header import SmtpApiHeader
-from .mail import get_sendgrid_connection
-from .models import save_email_message
-from .signals import sendgrid_email_sent
+from django_sendgrid.header import SmtpApiHeader
+from django_sendgrid.mail import get_sendgrid_connection
+from django_sendgrid.models import save_email_message
+from django_sendgrid.signals import sendgrid_email_sent
 
 
 logger = logging.getLogger(__name__)

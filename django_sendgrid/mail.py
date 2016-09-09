@@ -5,7 +5,7 @@ from django.core.mail import get_connection
 from django.core.mail import send_mail
 
 # django-sendgrid
-from .utils import in_test_environment
+from django_sendgrid.utils import in_test_environment
 
 
 SENDGRID_EMAIL_BACKEND = getattr(settings, "SENDGRID_EMAIL_BACKEND", None)

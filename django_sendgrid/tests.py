@@ -8,24 +8,24 @@ from django.dispatch import receiver
 from django.test import TestCase
 from django.test.client import Client
 
-from .constants import EVENT_TYPES_EXTRA_FIELDS_MAP, EVENT_MODEL_NAMES, UNIQUE_ARGS_STORED_FOR_EVENTS_WITHOUT_MESSAGE_ID
-from .mail import get_sendgrid_connection
-from .mail import send_sendgrid_mail
-from .message import SendGridEmailMessage
-from .message import SendGridEmailMultiAlternatives
-from .models import Argument
-from .models import Category
-from .models import EmailMessageAttachmentsData
-from .models import Event, EmailMessage as EmailMessageModel
-from .models import EventType
-from .models import UniqueArgument
-from .settings import SENDGRID_CREATE_MISSING_EMAIL_MESSAGES
-from .signals import sendgrid_email_sent
-from .utils import filterutils
-from .utils import in_test_environment
-from .utils.requestfactory import RequestFactory
-from .views import handle_single_event_request
-from .utils.testutils import post_test_event
+from django_sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP, EVENT_MODEL_NAMES, UNIQUE_ARGS_STORED_FOR_EVENTS_WITHOUT_MESSAGE_ID
+from django_sendgrid.mail import get_sendgrid_connection
+from django_sendgrid.mail import send_sendgrid_mail
+from django_sendgrid.message import SendGridEmailMessage
+from django_sendgrid.message import SendGridEmailMultiAlternatives
+from django_sendgrid.models import Argument
+from django_sendgrid.models import Category
+from django_sendgrid.models import EmailMessageAttachmentsData
+from django_sendgrid.models import Event, EmailMessage as EmailMessageModel
+from django_sendgrid.models import EventType
+from django_sendgrid.models import UniqueArgument
+from django_sendgrid.settings import SENDGRID_CREATE_MISSING_EMAIL_MESSAGES
+from django_sendgrid.signals import sendgrid_email_sent
+from django_sendgrid.utils import filterutils
+from django_sendgrid.utils import in_test_environment
+from django_sendgrid.utils.requestfactory import RequestFactory
+from django_sendgrid.views import handle_single_event_request
+from django_sendgrid.utils.testutils import post_test_event
 
 
 TEST_SENDER_EMAIL = "ryan@example.com"

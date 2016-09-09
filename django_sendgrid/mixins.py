@@ -4,9 +4,9 @@ try:
 except ImportError:
     from django.utils import simplejson as json
 
-from .utils import add_unsubscribes
-from .utils import delete_unsubscribes
-from .utils import get_unsubscribes
+from django_sendgrid.utils import add_unsubscribes
+from django_sendgrid.utils import delete_unsubscribes
+from django_sendgrid.utils import get_unsubscribes
 
 
 SENDGRID_EMAIL_USERNAME = getattr(settings, "SENDGRID_EMAIL_USERNAME", None)

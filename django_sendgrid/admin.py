@@ -3,20 +3,20 @@ from __future__ import absolute_import
 from django.conf import settings
 from django.contrib import admin
 
-from .models import Argument
-from .models import Category
-from .models import EmailMessage
-from .models import EmailMessageAttachmentsData
-from .models import EmailMessageBccData
-from .models import EmailMessageBodyData
-from .models import EmailMessageCcData
-from .models import EmailMessageExtraHeadersData
-from .models import EmailMessageSendGridHeadersData
-from .models import EmailMessageSubjectData
-from .models import EmailMessageToData
-from .models import Event
-from .models import EventType
-from .models import UniqueArgument
+from django_sendgrid.models import Argument
+from django_sendgrid.models import Category
+from django_sendgrid.models import EmailMessage
+from django_sendgrid.models import EmailMessageAttachmentsData
+from django_sendgrid.models import EmailMessageBccData
+from django_sendgrid.models import EmailMessageBodyData
+from django_sendgrid.models import EmailMessageCcData
+from django_sendgrid.models import EmailMessageExtraHeadersData
+from django_sendgrid.models import EmailMessageSendGridHeadersData
+from django_sendgrid.models import EmailMessageSubjectData
+from django_sendgrid.models import EmailMessageToData
+from django_sendgrid.models import Event
+from django_sendgrid.models import EventType
+from django_sendgrid.models import UniqueArgument
 
 
 DEBUG_SHOW_DATA_ADMIN_MODELS = settings.DEBUG
