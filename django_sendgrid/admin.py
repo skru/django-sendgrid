@@ -224,7 +224,6 @@ class EventTypeAdmin(admin.ModelAdmin):
 class EmailMessageGenericDataAdmin(admin.ModelAdmin):
     list_display = ("email_message", "data")
 
-
     def has_add_permission(self, request):
         return False
 

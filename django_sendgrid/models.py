@@ -56,12 +56,14 @@ if SENDGRID_USER_MIXIN_ENABLED:
 
 logger = logging.getLogger(__name__)
 
+
 @receiver(sendgrid_email_sent)
 def update_email_message(sender, message, response, **kwargs):
     messageId = getattr(message, "message_id", None)
     emailMessage = EmailMessage.objects.get(message_id=messageId)
     emailMessage.response = response
     emailMessage.save()
+
 
 def save_email_message(sender, **kwargs):
     message = kwargs.get("message", None)
@@ -139,6 +141,7 @@ def save_email_message(sender, **kwargs):
             else:
                 logMessage = "Component {c} is not tracked"
                 logger.debug(logMessage.format(c=component))
+
 
 @receiver(sendgrid_event_recieved)
 def log_event_recieved(sender, request, **kwargs):
@@ -447,8 +450,8 @@ class Event(models.Model):
     event_type = models.ForeignKey(EventType)
     creation_time = models.DateTimeField(auto_now_add=True)
     last_modified_time = models.DateTimeField(auto_now=True)
-    #this column should always be populated by sendgrids mandatory timestamp param
-    #null=True only because this was added later and need to distinguish old columns saved before this change
+    # this column should always be populated by sendgrids mandatory timestamp param
+    # null=True only because this was added later and need to distinguish old columns saved before this change
     timestamp = models.DateTimeField(null=True)
 
     class Meta:
@@ -458,12 +461,14 @@ class Event(models.Model):
     def __str__(self):
         return u"{0} - {1}".format(self.email_message, self.event_type)
 
+
 class ClickUrl(models.Model):
     url = models.TextField()
 
     class Meta:
         verbose_name = _("Click Url")
         verbose_name_plural = _("Click Urls")
+
 
 class ClickEvent(Event):
     click_url = models.ForeignKey(ClickUrl)
@@ -483,7 +488,8 @@ class ClickEvent(Event):
             self.click_url = ClickUrl.objects.get_or_create(url=url)[0]
         except MultipleObjectsReturned:
             self.click_url = ClickUrl.objects.filter(url=url).order_by('id')[0]
-    url = property(get_url,set_url)
+    url = property(get_url, set_url)
+
 
 class BounceReason(models.Model):
     reason = models.TextField()
@@ -492,6 +498,7 @@ class BounceReason(models.Model):
         verbose_name = _("Bounce Reason")
         verbose_name_plural = _("Bounce Reasons")
 
+
 class BounceType(models.Model):
     type = models.CharField(max_length=32,unique=True)
 
@@ -499,30 +506,32 @@ class BounceType(models.Model):
         verbose_name = _("Bounce Type")
         verbose_name_plural = _("Bounce Types")
 
+
 class BounceEvent(Event):
     status = models.CharField(max_length=16)
-    bounce_reason = models.ForeignKey(BounceReason,null=True)
-    bounce_type = models.ForeignKey(BounceType,null=True)
+    bounce_reason = models.ForeignKey(BounceReason, null=True)
+    bounce_type = models.ForeignKey(BounceType, null=True)
     class Meta:
         verbose_name = ("Bounce Event")
         verbose_name_plural = ("Bounce Events")
 
     def __str__(self):
-        return u"{0} - {1}".format(super(self,BounceEvent).__str__(),reason)
+        return u"{0} - {1}".format(super(self,BounceEvent).__str__(), reason)
 
     def get_reason(self):
         return self.bounce_reason.reason
 
     def set_reason(self,reason):
         self.bounce_reason = BounceReason.objects.get_or_create(reason=reason)[0]
-    reason = property(get_reason,set_reason)
+    reason = property(get_reason, set_reason)
 
     def get_type(self):
         return self.bounce_type.type
 
-    def set_type(self,reason):
+    def set_type(self, reason):
         self.bounce_type = BounceType.objects.get_or_create(type=reason)[0]
-    type = property(get_type,set_type)
+    type = property(get_type, set_type)
+
 
 class DeferredEvent(Event):
     response = models.TextField()
@@ -532,12 +541,14 @@ class DeferredEvent(Event):
         verbose_name = _("Deferred Event")
         verbose_name_plural = _("Deferred Events")
 
+
 class DroppedEvent(Event):
     reason = models.CharField(max_length=255)
 
     class Meta:
         verbose_name = _("Dropped Event")
         verbose_name_plural = _("Dropped Events")
+
 
 class DeliverredEvent(Event):
     response = models.TextField()

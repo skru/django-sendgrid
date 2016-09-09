@@ -12,8 +12,6 @@ except ImportError:
     except ImportError:
         from io import StringIO
 
-
-
 from django.conf import settings
 from django.core import mail
 
@@ -39,11 +37,13 @@ logger = logging.getLogger(__name__)
 
 #     return emailMessage
 
+
 def in_test_environment():
     """
     Returns True if in a test environment, False otherwise.
     """
     return hasattr(mail, 'outbox')
+
 
 def remove_keys_without_value(d):
     """
@@ -56,6 +56,7 @@ def remove_keys_without_value(d):
         del dCopy[k]
 
     return dCopy
+
 
 def normalize_parameters(d):
     """
@@ -71,6 +72,7 @@ def normalize_parameters(d):
     dCopy = remove_keys_without_value(dCopy)
 
     return dCopy
+
 
 def get_unsubscribes(date=None, days=None, start_date=None, end_date=None, limit=None, offset=None, email=None):
     """
@@ -106,6 +108,7 @@ def get_unsubscribes(date=None, days=None, start_date=None, end_date=None, limit
 
     return content
 
+
 def add_unsubscribes(email):
     """
     Add email addresses to the Unsubscribe list.
@@ -123,6 +126,7 @@ def add_unsubscribes(email):
     content = response.read()
 
     return content
+
 
 def delete_unsubscribes(email, start_date=None, end_date=None):
     """
@@ -146,6 +150,7 @@ def delete_unsubscribes(email, start_date=None, end_date=None):
     content = response.read()
 
     return content
+
 
 def zip_files(files):
     """

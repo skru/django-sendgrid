@@ -6,19 +6,19 @@ ARGUMENT_DATA_TYPE_COMPLEX = 4
 ARGUMENT_DATA_TYPE_STRING = 5
 EVENT_SHORT_DESC_MAX_LENGTH = 32
 
-EVENT_FIELDS = ("event","category","email")
+EVENT_FIELDS = ("event", "category", "email")
 
 EVENT_MODEL_NAMES = {
     "CLICK": "ClickEvent",
     "BOUNCE": "BounceEvent",
-    "DEFERRED":"DeferredEvent",
-    "DELIVERED":"DeliverredEvent",
-    "DROPPED":"DroppedEvent",
-    "UNKNOWN":"Event",
-    "PROCESSED":"Event",
-    "OPEN":"Event",
-    "UNSUBSCRIBE":"Event",
-    "SPAMREPORT":"Event"
+    "DEFERRED": "DeferredEvent",
+    "DELIVERED": "DeliverredEvent",
+    "DROPPED": "DroppedEvent",
+    "UNKNOWN": "Event",
+    "PROCESSED": "Event",
+    "OPEN": "Event",
+    "UNSUBSCRIBE": "Event",
+    "SPAMREPORT": "Event"
 }
 
 EVENT_TYPES_EXTRA_FIELDS_MAP = {

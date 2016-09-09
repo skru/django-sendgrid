@@ -6,8 +6,8 @@ import json
 import re
 import textwrap
 
-class SmtpApiHeader:
 
+class SmtpApiHeader:
     def __init__(self):
         self.data = {}
 
@@ -49,5 +49,5 @@ class SmtpApiHeader:
 
     def as_string(self):
         j = self.asJSON()
-        str = 'X-SMTPAPI: %s' % textwrap.fill(j, subsequent_indent = '    ', width = 72)
+        str = 'X-SMTPAPI: %s' % textwrap.fill(j, subsequent_indent='    ', width=72)
         return str

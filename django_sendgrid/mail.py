@@ -12,6 +12,7 @@ SENDGRID_EMAIL_BACKEND = getattr(settings, "SENDGRID_EMAIL_BACKEND", None)
 
 logger = logging.getLogger(__name__)
 
+
 def get_sendgrid_connection(*args, **kwargs):
     """
     Returns an instance of the email backend specified in SENDGRID_EMAIL_BACKEND.
@@ -26,14 +27,18 @@ def get_sendgrid_connection(*args, **kwargs):
 
     return sendgrid_connection
 
-def send_sendgrid_mail(subject, message, from_email, recipient_list,
-    fail_silently=False, auth_user=None, auth_password=None, connection=None):
+
+def send_sendgrid_mail(
+        subject, message, from_email, recipient_list,
+        fail_silently=False, auth_user=None, auth_password=None, connection=None):
     """
     Sends mail with SendGrid.
     """
     sendgrid_connection = get_sendgrid_connection()
-    return send_mail(subject, message, from_email, recipient_list,
+    return send_mail(
+        subject, message, from_email, recipient_list,
         fail_silently, auth_user, auth_password, connection=sendgrid_connection)
+
 
 def send_mass_sendgrid_mail(datatuple, fail_silently=False, auth_user=None, auth_password=None, connection=None):
     """

@@ -19,6 +19,7 @@ POST_EVENTS_RESPONSE_STATUS_CODE = getattr(settings, "POST_EVENT_HANDLER_RESPONS
 
 logger = logging.getLogger(__name__)
 
+
 def handle_single_event_request(request):
     """
     Handles single event POST requests.
@@ -84,6 +85,7 @@ def handle_single_event_request(request):
 
     return response
 
+
 def handle_batched_events_request(request):
     """
     Handles batched events POST requests.
@@ -106,6 +108,7 @@ def handle_batched_events_request(request):
     response = HttpResponse()
     return response
 
+
 def clean_response(response):
     expectedStatusCode = POST_EVENTS_RESPONSE_STATUS_CODE
 
@@ -121,6 +124,7 @@ def clean_response(response):
         response.status_code = expectedStatusCode
 
     return response
+
 
 @csrf_exempt
 def listener(request, statusCode=POST_EVENTS_RESPONSE_STATUS_CODE):
@@ -157,6 +161,7 @@ def listener(request, statusCode=POST_EVENTS_RESPONSE_STATUS_CODE):
         response.status_code = 405
 
     return clean_response(response)
+
 
 def download_attachments(request, message_id):
     """
@@ -197,4 +202,3 @@ def download_attachments(request, message_id):
         response.write("The attachments were not found")
 
     return response
-

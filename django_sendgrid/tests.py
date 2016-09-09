@@ -22,10 +22,10 @@ from .models import UniqueArgument
 from .settings import SENDGRID_CREATE_MISSING_EMAIL_MESSAGES
 from .signals import sendgrid_email_sent
 from .utils import filterutils
-# from .utils import get_email_message
 from .utils import in_test_environment
 from .utils.requestfactory import RequestFactory
 from .views import handle_single_event_request
+from .utils.testutils import post_test_event
 
 
 TEST_SENDER_EMAIL = "ryan@example.com"
@@ -34,7 +34,6 @@ TEST_RECIPIENTS = ["ryan@example.com"]
 validate_filter_setting_value = filterutils.validate_filter_setting_value
 validate_filter_specification = filterutils.validate_filter_specification
 update_filters = filterutils.update_filters
-
 
 
 class SendGridEventTest(TestCase):
@@ -47,24 +46,24 @@ class SendGridEventTest(TestCase):
         event_count = Event.objects.count()
         post_data = {
             "message_id": self.email.message_id,
-            "email" : self.email.from_email,
-            "event" : "OPEN",
+            "email": self.email.from_email,
+            "event": "OPEN",
             }
-        request = self.rf.post('/sendgrid/events',post_data)
+        request = self.rf.post('/sendgrid/events', post_data)
         handle_single_event_request(request)
-        #Event created
-        self.assertEqual(Event.objects.count(),event_count+1)
-        #Email matches original message_id
+        # Event created
+        self.assertEqual(Event.objects.count(), event_count + 1)
+        # Email matches original message_id
         self.assertEqual(Event.objects.get().email_message.message_id, self.email.message_id.__str__())
 
-    def verify_event_with_missing_email(self,post_data):
+    def verify_event_with_missing_email(self, post_data):
         event_count = Event.objects.count()
         email_count = EmailMessageModel.objects.count()
 
         for key in UNIQUE_ARGS_STORED_FOR_EVENTS_WITHOUT_MESSAGE_ID:
             post_data[key] = key+"_value"
 
-        request = self.rf.post('/sendgrid/events',post_data)
+        request = self.rf.post('/sendgrid/events', post_data)
         handle_single_event_request(request)
 
         if SENDGRID_CREATE_MISSING_EMAIL_MESSAGES:
@@ -72,33 +71,33 @@ class SendGridEventTest(TestCase):
         else:
             delta = 0
 
-        #event created
+        # event created
         self.assertEqual(Event.objects.count(), event_count + delta)
-        #email created
+        # email created
         self.assertEqual(EmailMessageModel.objects.count(), email_count + delta)
 
         if SENDGRID_CREATE_MISSING_EMAIL_MESSAGES:
             event = Event.objects.get(email=post_data['email'])
             emailMessage = event.email_message
-            #check to_email
+            # check to_email
             self.assertEqual(event.email_message.to_email, event.email)
 
-            #check unique args
+            # check unique args
             for key in UNIQUE_ARGS_STORED_FOR_EVENTS_WITHOUT_MESSAGE_ID:
                 self.assertEqual(post_data[key],emailMessage.uniqueargument_set.get(argument__key=key).data)
 
-            #post another event
-            request = self.rf.post('/sendgrid/events',post_data)
+            # post another event
+            request = self.rf.post('/sendgrid/events', post_data)
             response = handle_single_event_request(request)
 
-            #should be same email_count
-            self.assertEqual(EmailMessageModel.objects.count(),email_count + 1)
+            # should be same email_count
+            self.assertEqual(EmailMessageModel.objects.count(), email_count + 1)
 
     def test_event_email_doesnt_exist(self):
         postData = {
             "message_id": 'a5df',
-            "email" : self.email.to[0],
-            "event" : "OPEN",
+            "email": self.email.to[0],
+            "event": "OPEN",
             "category": ["test_category", "another_test_category"],
         }
 
@@ -106,8 +105,8 @@ class SendGridEventTest(TestCase):
 
     def test_event_no_message_id(self):
         postData = {
-            "email" : self.email.to[0],
-            "event" : "OPEN",
+            "email": self.email.to[0],
+            "event": "OPEN",
             "category": "test_category",
         }
         self.verify_event_with_missing_email(postData)
@@ -115,8 +114,8 @@ class SendGridEventTest(TestCase):
     def test_event_email_doesnt_exist_no_category(self):
         postData = {
             "message_id": 'a5df',
-            "email" : self.email.to[0],
-            "event" : "OPEN"
+            "email": self.email.to[0],
+            "event": "OPEN"
         }
 
         self.verify_event_with_missing_email(postData)
@@ -238,7 +237,6 @@ class SendWithEmailMessageTest(TestCase):
             connection=self.connection,
         )
         email.send()
-
 
 
 class SendWithSendGridEmailMultiAlternativesTest(TestCase):
@@ -461,13 +459,13 @@ class UniqueArgumentTests(TestCase):
         uniqueArgument = self.assert_unique_argument_exists(**expectedUniqueArgKeyValue)
         self.assertTrue(uniqueArgument)
 
-from .utils.testutils import post_test_event
+
 class EventPostTests(TestCase):
     fixtures = ["initial_data.json"]
 
     def setUp(self):
         self.client = Client()
-        self.email_message = EmailMessageModel.objects.create(to_email=TEST_RECIPIENTS[0], from_email=TEST_SENDER_EMAIL,message_id='123abc')
+        self.email_message = EmailMessageModel.objects.create(to_email=TEST_RECIPIENTS[0], from_email=TEST_SENDER_EMAIL, message_id='123abc')
 
     def test_all_event_types(self):
         """
@@ -478,11 +476,12 @@ class EventPostTests(TestCase):
             print("Testing {0} event".format(event_type))
             event_model = eval(EVENT_MODEL_NAMES[event_type]) if event_type in EVENT_MODEL_NAMES.keys() else Event
             event_count_before = event_model.objects.count()
-            response = post_test_event(event_type,event_model_name,self.email_message)
-            self.assertEqual(event_model.objects.count(),event_count_before+1)
+            response = post_test_event(event_type, event_model_name,self.email_message)
+            self.assertEqual(event_model.objects.count(), event_count_before+1)
             event = event_model.objects.filter(event_type__name=event_type)[0]
             for key in EVENT_TYPES_EXTRA_FIELDS_MAP[event_type.upper()]:
-                self.assertNotEqual(event.__getattribute__(key),None)
+                self.assertNotEqual(event.__getattribute__(key), None)
+
 
 class EventTypeFixtureTests(TestCase):
     fixtures = ["initial_data.json"]
@@ -539,6 +538,7 @@ class DownloadAttachmentTestCase(TestCase):
         c = Client()
         response = c.get(attachmentsURL)
         self.assertEqual(response.status_code, 200)
+
 
 class DownloadAttachment404TestCase(TestCase):
     def setUp(self):

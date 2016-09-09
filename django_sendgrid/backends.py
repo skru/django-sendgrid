@@ -12,6 +12,7 @@ SENDGRID_EMAIL_PASSWORD = getattr(settings, "SENDGRID_EMAIL_PASSWORD", None)
 
 logger = logging.getLogger(__name__)
 
+
 def check_settings(fail_silently=False):
     """
     Checks that the required settings are available.

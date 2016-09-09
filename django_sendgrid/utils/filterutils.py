@@ -1,6 +1,5 @@
 from django.conf import settings
 
-
 PASS = lambda i: True
 FAIL = lambda i: False
 IS_ZERO_OR_ONE = lambda i: i in (0, 1, "0", "1")
@@ -22,6 +21,7 @@ FILTER_SETTING_VALUE_TESTS = {
 
 IGNORE_MISSING_TESTS = getattr(settings, "IGNORE_MISSING_TESTS", False)
 VALIDATE_FILTER_SPECIFICATION = getattr(settings, "VALIDATE_FILTER_SPECIFICATION", True)
+
 
 def validate_filter_setting_value(filter, setting, value, ignoreMissingTests=IGNORE_MISSING_TESTS):
     """
@@ -46,6 +46,7 @@ def validate_filter_setting_value(filter, setting, value, ignoreMissingTests=IGN
 
     return result
 
+
 def validate_filter_specification(f):
     """
     Validates a given filter specification.
@@ -62,6 +63,7 @@ def validate_filter_specification(f):
     resultSet = set(testResults.values())
     passedAllTests = len(resultSet) == 1 and True in resultSet
     return passedAllTests
+
 
 def update_filters(email, filterSpec, validate=VALIDATE_FILTER_SPECIFICATION):
     """

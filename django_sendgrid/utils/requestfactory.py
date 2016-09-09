@@ -1,4 +1,4 @@
-#Took this from http://djangosnippets.org/snippets/963/
+# Took this from http://djangosnippets.org/snippets/963/
 from django.core.handlers.wsgi import WSGIRequest
 from django.test import Client
 

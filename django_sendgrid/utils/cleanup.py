@@ -11,6 +11,7 @@ ONE_WEEK = datetime.timedelta(weeks=1)
 
 logger = logging.getLogger(__name__)
 
+
 def delete_email_message_body_data(emailMessages):
     tick, tock = time.time(), None
     affectedEmailMessages = []
@@ -34,6 +35,7 @@ def delete_email_message_body_data(emailMessages):
     }
 
     return summary
+
 
 def cleanup_email_message_body_data(*args, **kwargs):
     """

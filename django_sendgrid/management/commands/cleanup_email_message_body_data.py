@@ -12,20 +12,23 @@ ONE_WEEK = datetime.timedelta(weeks=1)
 class Command(BaseCommand):
     help = "Purges old EmailMessageBodyData objects"
     option_list = BaseCommand.option_list + (
-    make_option("--as-date",
-        default=False,
-        action="store_true",
-        help="Sets the number of days"
+        make_option(
+            "--as-date",
+            default=False,
+            action="store_true",
+            help="Sets the number of days"
         ),
-    make_option("--days",
-        default=0,
-        type="int",
-        help="Sets the number of days"
-        ),
-    make_option("--weeks",
-        default=0,
-        type="int",
-        help="Sets the number of weeks"
+        make_option(
+            "--days",
+            default=0,
+            type="int",
+            help="Sets the number of days"
+            ),
+        make_option(
+            "--weeks",
+            default=0,
+            type="int",
+            help="Sets the number of weeks"
         ),
     )
 
