@@ -10,10 +10,10 @@ from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 
-from .constants import EVENT_TYPES_EXTRA_FIELDS_MAP, EVENT_MODEL_NAMES
-from .models import EmailMessage, Event, EventType
-from .settings import SENDGRID_CREATE_MISSING_EMAIL_MESSAGES
-from .signals import sendgrid_event_recieved, sendgrid_event_created
+from django_sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP, EVENT_MODEL_NAMES
+from django_sendgrid.models import EmailMessage, Event, ClickEvent, DeferredEvent, DroppedEvent, DeliverredEvent, BounceEvent, EventType  # NOQA
+from django_sendgrid.settings import SENDGRID_CREATE_MISSING_EMAIL_MESSAGES
+from django_sendgrid.signals import sendgrid_event_recieved, sendgrid_event_created
 
 POST_EVENTS_RESPONSE_STATUS_CODE = getattr(settings, "POST_EVENT_HANDLER_RESPONSE_STATUS_CODE", 200)
 
