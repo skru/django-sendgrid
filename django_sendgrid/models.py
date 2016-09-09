@@ -9,7 +9,7 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from six import string_types
 
-from django_sendgrid.constants import (
+from .constants import (
     ARGUMENT_DATA_TYPE_UNKNOWN,
     ARGUMENT_DATA_TYPE_BOOLEAN,
     ARGUMENT_DATA_TYPE_INTEGER,
@@ -18,7 +18,7 @@ from django_sendgrid.constants import (
     ARGUMENT_DATA_TYPE_STRING,
     UNIQUE_ARGS_STORED_FOR_EVENTS_WITHOUT_MESSAGE_ID,
 )
-from django_sendgrid.signals import sendgrid_email_sent
+from .signals import sendgrid_email_sent
 from .signals import sendgrid_event_recieved
 
 MAX_CATEGORIES_PER_EMAIL_MESSAGE = 10
