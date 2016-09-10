@@ -19,8 +19,10 @@ DEFAULT_CSV_SEPARATOR = ","
 
 logger = logging.getLogger(__name__)
 
+
 def parse_csv_string(s, separator=DEFAULT_CSV_SEPARATOR):
     return [field.strip() for field in s.split(separator) if field]
+
 
 def send_simple_email(request):
     if request.method == 'POST':
@@ -35,7 +37,7 @@ def send_simple_email(request):
             categories = parse_csv_string(categoryData)
             html = form.cleaned_data["html"]
             enable_gravatar = form.cleaned_data["enable_gravatar"]
-            enable_click_tracking = form.cleaned_data["enable_click_tracking"]
+            # enable_click_tracking = form.cleaned_data["enable_click_tracking"]
             add_unsubscribe_link = form.cleaned_data["add_unsubscribe_link"]
 
             if html:
@@ -56,7 +58,8 @@ def send_simple_email(request):
 
             if categories:
                 logger.debug("Categories {c} were given".format(c=categories))
-                # The SendGrid Event API will POST different data for single/multiple category messages.
+                # The SendGrid Event API will POST different data for
+                # single/multiple category messages.
                 if len(categories) == 1:
                     sendGridEmail.sendgrid_headers.setCategory(categories[0])
                 elif len(categories) > 1:
@@ -103,6 +106,6 @@ def send_simple_email(request):
     else:
         form = EmailForm()
 
-    c = { "form": form }
+    c = {"form": form}
     c.update(csrf(request))
     return render_to_response('main/send_email.html', c)

@@ -12,12 +12,13 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'sendgrid.db',                         # Or path to database file if using sqlite3.
-        'USER': '',                         # Not used with sqlite3.
-        'PASSWORD': '',                     # Not used with sqlite3.
-        'HOST': '',                         # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                         # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',
+        # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'sendgrid.db',   # Or path to database file if using sqlite3.
+        'USER': '',              # Not used with sqlite3.
+        'PASSWORD': '',          # Not used with sqlite3.
+        'HOST': '',              # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',              # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -80,7 +81,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#     'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -90,7 +91,7 @@ SECRET_KEY = 'n!jhvdh#gf2%6o^va3ohfly_z4eg$nmxyq9#ke(&%$u)xgpjd_'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#      'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -140,23 +141,23 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler'
         },
-        'console':{
-            'level':'DEBUG',
-            'class':'logging.StreamHandler',
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
         },
-        'sendgrid':{
-            'level':'DEBUG',
-            'class':'logging.StreamHandler',
+        'sendgrid': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
         },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins',],
+            'handlers': ['mail_admins', ],
             'level': 'ERROR',
             'propagate': True,
         },
         'sendgrid': {
-            'handlers': ['console',],
+            'handlers': ['console', ],
             'level': 'DEBUG',
         }
     }
@@ -176,6 +177,6 @@ SENDGRID_EMAIL_PASSWORD = os.getenv("SENDGRID_EMAIL_PASSWORD")
 # SENDGRID_CREATE_MISSING_EMAIL_MESSAGES = True
 
 try:
-    from settings_local import *
+    from settings_local import *  # NOQA
 except ImportError:
     pass

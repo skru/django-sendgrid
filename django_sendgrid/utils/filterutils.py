@@ -1,8 +1,8 @@
 from django.conf import settings
 
-PASS = lambda i: True
-FAIL = lambda i: False
-IS_ZERO_OR_ONE = lambda i: i in (0, 1, "0", "1")
+PASS = lambda i: True  # NOQA
+FAIL = lambda i: False  # NOQA
+IS_ZERO_OR_ONE = lambda i: i in (0, 1, "0", "1")  # NOQA
 
 INTERFACES = {
     "gravatar": ["enable"],
@@ -31,7 +31,8 @@ def validate_filter_setting_value(filter, setting, value, ignoreMissingTests=IGN
         raise AttributeError("The filter {f} is not valid".format(f=filter))
 
     if setting not in INTERFACES[filter]:
-        raise AttributeError("The setting {s} is not valid for the filter {f}".format(s=setting, f=filter))
+        raise AttributeError("The setting {s} is not valid for the filter {f}".format(
+            s=setting, f=filter))
 
     testName = ".".join([filter, setting])
     try:

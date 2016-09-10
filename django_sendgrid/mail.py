@@ -40,11 +40,13 @@ def send_sendgrid_mail(
         fail_silently, auth_user, auth_password, connection=sendgrid_connection)
 
 
-def send_mass_sendgrid_mail(datatuple, fail_silently=False, auth_user=None, auth_password=None, connection=None):
+def send_mass_sendgrid_mail(
+        datatuple, fail_silently=False, auth_user=None, auth_password=None, connection=None):
     """
     Sends mass mail with SendGrid.
     """
     raise NotImplementedError
 
-    sendgrid_connection = get_sendgrid_connection()
-    return send_mass_mail(datatuple, fail_silently, auth_password, auth_password, connection=sendgrid_connection)
+    # sendgrid_connection = get_sendgrid_connection()
+    # return send_mass_mail(
+    #     datatuple, fail_silently, auth_password, auth_password, connection=sendgrid_connection)

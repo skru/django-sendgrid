@@ -104,7 +104,8 @@ def get_memory_usage():
 @task
 def debug_on(filepath=None):
     if not filepath:
-        filepath = "/home/{user}/webapps/djsendgrid/example_project/settings_local.py".format(user=WEBFACTION_USERNAME)
+        filepath = "/home/{user}/webapps/djsendgrid/example_project/settings_local.py".format(
+            user=WEBFACTION_USERNAME)
     cmd = "sed -i 's/False/True/' {file}".format(file=filepath)
     run(cmd)
     restart_apache()
@@ -113,7 +114,8 @@ def debug_on(filepath=None):
 @task
 def debug_off(filepath=None):
     if not filepath:
-        filepath = "/home/{user}/webapps/djsendgrid/example_project/settings_local.py".format(user=WEBFACTION_USERNAME)
+        filepath = "/home/{user}/webapps/djsendgrid/example_project/settings_local.py".format(
+            user=WEBFACTION_USERNAME)
     cmd = "sed -i 's/True/False/' {file}".format(file=filepath)
     run(cmd)
     restart_apache()
@@ -142,7 +144,8 @@ def get_url_open_time(url):
 
 
 def time_get_url(url, n=1):
-    avg = lambda s: sum(s) / len(s)
+    def avg(s):
+        return sum(s) / len(s)
 
     timings = []
     for i in range(n):
@@ -161,7 +164,8 @@ def update_settings():
     putFiles = {
         "settings_local.py": {
             "local": os.path.join(PROJECT_ROOT, "deploy/settings_local.py"),
-            "remote": os.path.join(WEBFACTION_APPLICATION_ROOT, "example_project", "settings_local.py")
+            "remote": os.path.join(
+                WEBFACTION_APPLICATION_ROOT, "example_project", "settings_local.py")
         },
     }
     put_files(putFiles)
@@ -182,7 +186,8 @@ def deploy(branch):
     putFiles = {
         "settings_local.py": {
             "local": os.path.join(PROJECT_ROOT, "deploy/settings_local.py"),
-            "remote": os.path.join(WEBFACTION_APPLICATION_ROOT, "example_project", "settings_local.py")
+            "remote": os.path.join(
+                WEBFACTION_APPLICATION_ROOT, "example_project", "settings_local.py")
         },
         "example_project.wsgi": {
             "local": os.path.join(PROJECT_ROOT, "deploy/example_project.wsgi"),
@@ -217,7 +222,8 @@ def watch_logs(prefix="access", n=10, follow=False):
         if prefix in logPathOverrides:
             logFile = logPathOverrides[prefix]
         else:
-            logFile = os.path.join(env.home, "logs", "user", "{prefix}_{app}.log").format(prefix=prefix, app=WEBFACTION_APPLICATION)
+            logFile = os.path.join(env.home, "logs", "user", "{prefix}_{app}.log").format(
+                prefix=prefix, app=WEBFACTION_APPLICATION)
 
         if follow:
             cmd = "tail -n {n} -f {file}".format(n=n, file=logFile)

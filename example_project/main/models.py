@@ -19,6 +19,7 @@ REGISTRATION_EMAIL_SPEC = {
     "from_email": 'welcome@example.com',
 }
 
+
 def get_user(user):
     """docstring for get_user"""
     _user = None
@@ -40,6 +41,7 @@ def get_user(user):
 
     return _user
 
+
 def send_registration_email_to_new_user(user, emailOptions=REGISTRATION_EMAIL_SPEC):
     """
     Sends a registration email to ``user``.
@@ -55,6 +57,7 @@ def send_registration_email_to_new_user(user, emailOptions=REGISTRATION_EMAIL_SP
     response = registrationEmail.send()
 
     return response
+
 
 @receiver(post_save, sender=User)
 def send_new_user_email(sender, instance, created, raw, using, **kwargs):

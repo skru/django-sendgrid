@@ -24,7 +24,9 @@ DEBUG_SHOW_DATA_ADMIN_MODELS = settings.DEBUG
 
 class ArgumentAdmin(admin.ModelAdmin):
     date_hierarchy = "creation_time"
-    list_display = ("key", "creation_time", "last_modified_time", "email_message_count", "unique_arguments_count")
+    list_display = (
+        "key", "creation_time", "last_modified_time",
+        "email_message_count", "unique_arguments_count")
     readonly_fields = ("key", "email_message_count", "unique_arguments_count")
     search_fields = ("name",)
 

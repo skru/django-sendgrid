@@ -73,7 +73,6 @@ class SendGridEmailMessageMixin:
         """docstring for prep_message_for_sending"""
         self.setup_connection()
 
-        # now = tz.localize(datetime.datetime.strptime(timestamp[:26], POSTMARK_DATETIME_STRING)).astimezone(pytz.utc)
         uniqueArgs = {
             "message_id": str(self._message_id),
             # "submition_time": time.time(),
@@ -94,7 +93,8 @@ class SendGridEmailMessage(SendGridEmailMessageMixin, EmailMessage):
     >>> from django_sendgrid.message import SendGridEmailMessage
     >>> myEmail = "rbalfanz@gmail.com"
     >>> mySendGridCategory = "django-sendgrid"
-    >>> e = SendGridEmailMessage("Subject", "Message", myEmail, [myEmail], headers={"Reply-To": myEmail})
+    >>> headers = {"Reply-To": myEmail}
+    >>> e = SendGridEmailMessage("Subject", "Message", myEmail, [myEmail], headers=headers)
     >>> e.sendgrid_headers.setCategory(mySendGridCategory)
     >>> response = e.send()
     """
@@ -145,7 +145,8 @@ class SendGridEmailMultiAlternatives(SendGridEmailMessageMixin, EmailMultiAltern
 
         save_email_message(sender=self, message=self, response=None)
         response = super(SendGridEmailMultiAlternatives, self).send(*args, **kwargs)
-        logger.debug("Tried to send a multialternatives email with SendGrid and got response {r}".format(r=response))
+        s = "Tried to send a multialternatives email with SendGrid and got response {r}"
+        logger.debug(s.format(r=response))
         sendgrid_email_sent.send(sender=self, message=self, response=response)
 
         return response

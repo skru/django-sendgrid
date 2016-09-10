@@ -8,7 +8,11 @@ from django.dispatch import receiver
 from django.test import TestCase
 from django.test.client import Client
 
-from django_sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP, EVENT_MODEL_NAMES, UNIQUE_ARGS_STORED_FOR_EVENTS_WITHOUT_MESSAGE_ID
+from django_sendgrid.constants import (
+    EVENT_TYPES_EXTRA_FIELDS_MAP,
+    EVENT_MODEL_NAMES,
+    UNIQUE_ARGS_STORED_FOR_EVENTS_WITHOUT_MESSAGE_ID,
+)
 from django_sendgrid.mail import get_sendgrid_connection
 from django_sendgrid.mail import send_sendgrid_mail
 from django_sendgrid.message import SendGridEmailMessage
@@ -54,7 +58,8 @@ class SendGridEventTest(TestCase):
         # Event created
         self.assertEqual(Event.objects.count(), event_count + 1)
         # Email matches original message_id
-        self.assertEqual(Event.objects.get().email_message.message_id, self.email.message_id.__str__())
+        self.assertEqual(
+            Event.objects.get().email_message.message_id, self.email.message_id.__str__())
 
     def verify_event_with_missing_email(self, post_data):
         event_count = Event.objects.count()
@@ -84,11 +89,12 @@ class SendGridEventTest(TestCase):
 
             # check unique args
             for key in UNIQUE_ARGS_STORED_FOR_EVENTS_WITHOUT_MESSAGE_ID:
-                self.assertEqual(post_data[key],emailMessage.uniqueargument_set.get(argument__key=key).data)
+                self.assertEqual(
+                    post_data[key], emailMessage.uniqueargument_set.get(argument__key=key).data)
 
             # post another event
             request = self.rf.post('/sendgrid/events', post_data)
-            response = handle_single_event_request(request)
+            handle_single_event_request(request)
 
             # should be same email_count
             self.assertEqual(EmailMessageModel.objects.count(), email_count + 1)
@@ -169,7 +175,7 @@ class SendGridEmailTest(TestCase):
             self.assertTrue("message" in kwargs)
 
         email = SendGridEmailMessage(to=TEST_RECIPIENTS, from_email=TEST_SENDER_EMAIL)
-        response = email.send()
+        email.send()
 
 
 class SendGridInTestEnvTest(TestCase):
@@ -388,7 +394,8 @@ class CategoryTests(TestCase):
             expectedCategory = self.testCategoryNames[0]
             self.assertEqual(sendgridHeadersData["category"], expectedCategory)
 
-        sendgridEmailMessage = SendGridEmailMessage(to=TEST_RECIPIENTS, from_email=TEST_SENDER_EMAIL)
+        sendgridEmailMessage = SendGridEmailMessage(
+            to=TEST_RECIPIENTS, from_email=TEST_SENDER_EMAIL)
         sendgridEmailMessage.sendgrid_headers.setCategory(self.testCategoryNames[0])
         sendgridEmailMessage.update_headers()
         sendgridEmailMessage.send()
@@ -408,7 +415,8 @@ class CategoryTests(TestCase):
             expectedCategories = self.testCategoryNames
             self.assertEqual(sendgridHeadersData["category"], expectedCategories)
 
-        sendgridEmailMessage = SendGridEmailMessage(to=TEST_RECIPIENTS, from_email=TEST_SENDER_EMAIL)
+        sendgridEmailMessage = SendGridEmailMessage(
+            to=TEST_RECIPIENTS, from_email=TEST_SENDER_EMAIL)
         sendgridEmailMessage.sendgrid_headers.setCategory(self.testCategoryNames)
         sendgridEmailMessage.update_headers()
         sendgridEmailMessage.send()
@@ -444,7 +452,8 @@ class UniqueArgumentTests(TestCase):
 
             self.assertTrue(sendgridHeadersData["unique_args"])
 
-        sendgridEmailMessage = SendGridEmailMessage(to=TEST_RECIPIENTS, from_email=TEST_SENDER_EMAIL)
+        sendgridEmailMessage = SendGridEmailMessage(
+            to=TEST_RECIPIENTS, from_email=TEST_SENDER_EMAIL)
         # sendgridEmailMessage.sendgrid_headers.setCategory(self.testCategoryNames[0])
         # sendgridEmailMessage.update_headers()
         sendgridEmailMessage.send()
@@ -465,7 +474,8 @@ class EventPostTests(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.email_message = EmailMessageModel.objects.create(to_email=TEST_RECIPIENTS[0], from_email=TEST_SENDER_EMAIL, message_id='123abc')
+        self.email_message = EmailMessageModel.objects.create(
+            to_email=TEST_RECIPIENTS[0], from_email=TEST_SENDER_EMAIL, message_id='123abc')
 
     def test_all_event_types(self):
         """
@@ -474,9 +484,10 @@ class EventPostTests(TestCase):
         """
         for event_type, event_model_name in EVENT_MODEL_NAMES.items():
             print("Testing {0} event".format(event_type))
-            event_model = eval(EVENT_MODEL_NAMES[event_type]) if event_type in EVENT_MODEL_NAMES.keys() else Event
+            event_model = eval(
+                EVENT_MODEL_NAMES[event_type]) if event_type in EVENT_MODEL_NAMES.keys() else Event
             event_count_before = event_model.objects.count()
-            response = post_test_event(event_type, event_model_name,self.email_message)
+            post_test_event(event_type, event_model_name, self.email_message)
             self.assertEqual(event_model.objects.count(), event_count_before+1)
             event = event_model.objects.filter(event_type__name=event_type)[0]
             for key in EVENT_TYPES_EXTRA_FIELDS_MAP[event_type.upper()]:

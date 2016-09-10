@@ -40,7 +40,9 @@ class SendGridEmailBackend(EmailBackend):
     """
     A wrapper that manages the SendGrid SMTP network connection.
     """
-    def __init__(self, host=None, port=None, username=None, password=None, use_tls=None, fail_silently=False, **kwargs):
+    def __init__(
+            self, host=None, port=None, username=None,
+            password=None, use_tls=None, fail_silently=False, **kwargs):
         if not check_settings():
             logger.exception("A required setting was not found")
 

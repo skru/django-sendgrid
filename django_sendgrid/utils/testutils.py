@@ -22,4 +22,6 @@ def post_test_event(event_type, event_model_name, email_message):
         else:
             event_data[key] = "test_param" + key
 
-    return client.post(reverse("sendgrid_post_event", args=[]), data=urlencode(event_data), content_type="application/x-www-form-urlencoded; charset=utf-8")
+    return client.post(
+        reverse("sendgrid_post_event", args=[]), data=urlencode(event_data),
+        content_type="application/x-www-form-urlencoded; charset=utf-8")

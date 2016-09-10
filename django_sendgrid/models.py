@@ -35,7 +35,8 @@ DEFAULT_SENDGRID_EMAIL_TRACKING_COMPONENTS = (
 )
 
 SENDGRID_EMAIL_TRACKING = getattr(settings, "SENDGRID_USER_MIXIN_ENABLED", True)
-SENDGRID_EMAIL_TRACKING_COMPONENTS = getattr(settings, "SENDGRID_USER_MIXIN_ENABLED", DEFAULT_SENDGRID_EMAIL_TRACKING_COMPONENTS)
+SENDGRID_EMAIL_TRACKING_COMPONENTS = getattr(
+    settings, "SENDGRID_USER_MIXIN_ENABLED", DEFAULT_SENDGRID_EMAIL_TRACKING_COMPONENTS)
 SENDGRID_USER_MIXIN_ENABLED = getattr(settings, "SENDGRID_USER_MIXIN_ENABLED", True)
 
 ARGUMENT_KEY_MAX_LENGTH = 255
@@ -118,7 +119,7 @@ def save_email_message(sender, **kwargs):
                 argument, argumentCreated = Argument.objects.get_or_create(key=k)
                 if argumentCreated:
                     logger.debug("Argument {a} was created".format(a=argument))
-                uniqueArg = UniqueArgument.objects.create(
+                UniqueArgument.objects.create(
                     argument=argument,
                     email_message=emailMessage,
                     data=v,
@@ -132,12 +133,13 @@ def save_email_message(sender, **kwargs):
                     componentData = getattr(message, component, None)
 
                 if componentData:
-                    componentData = componentModel.objects.create(
+                    componentModel.objects.create(
                         email_message=emailMessage,
                         data=componentData,
                     )
                 else:
-                    logger.debug("Could not get data for '{c}' component: {d}".format(c=component, d=componentData))
+                    logger.debug("Could not get data for '{c}' component: {d}".format(
+                        c=component, d=componentData))
             else:
                 logMessage = "Component {c} is not tracked"
                 logger.debug(logMessage.format(c=component))
@@ -178,7 +180,8 @@ class Argument(models.Model):
         (ARGUMENT_DATA_TYPE_STRING, _("String")),
     )
     key = models.CharField(max_length=ARGUMENT_KEY_MAX_LENGTH)
-    data_type = models.IntegerField(_("Data Type"), choices=ARGUMENT_DATA_TYPES, default=ARGUMENT_DATA_TYPE_UNKNOWN)
+    data_type = models.IntegerField(
+        _("Data Type"), choices=ARGUMENT_DATA_TYPES, default=ARGUMENT_DATA_TYPE_UNKNOWN)
     creation_time = models.DateTimeField(auto_now_add=True)
     last_modified_time = models.DateTimeField(auto_now=True)
 
@@ -191,12 +194,18 @@ class Argument(models.Model):
 
 
 class EmailMessage(models.Model):
-    message_id = models.CharField(unique=True, max_length=36, editable=False, blank=True, null=True, help_text="UUID")
+    message_id = models.CharField(
+        unique=True, max_length=36, editable=False, blank=True, null=True, help_text="UUID")
     # user = models.ForeignKey(User, null=True) # TODO
-    from_email = models.CharField(max_length=EMAIL_MESSAGE_FROM_EMAIL_MAX_LENGTH, help_text="Sender's e-mail")
-    to_email = models.CharField(max_length=EMAIL_MESSAGE_TO_EMAIL_MAX_LENGTH, help_text="Primiary recipient's e-mail")
-    category = models.CharField(max_length=EMAIL_MESSAGE_CATEGORY_MAX_LENGTH, blank=True, null=True, help_text="Primary SendGrid category")
-    response = models.IntegerField(blank=True, null=True, help_text="Response received from SendGrid after sending")
+    from_email = models.CharField(
+        max_length=EMAIL_MESSAGE_FROM_EMAIL_MAX_LENGTH, help_text="Sender's e-mail")
+    to_email = models.CharField(
+        max_length=EMAIL_MESSAGE_TO_EMAIL_MAX_LENGTH, help_text="Primiary recipient's e-mail")
+    category = models.CharField(
+        max_length=EMAIL_MESSAGE_CATEGORY_MAX_LENGTH,
+        blank=True, null=True, help_text="Primary SendGrid category")
+    response = models.IntegerField(
+        blank=True, null=True, help_text="Response received from SendGrid after sending")
     creation_time = models.DateTimeField(auto_now_add=True)
     last_modified_time = models.DateTimeField(auto_now=True)
     categories = models.ManyToManyField(Category)
@@ -207,16 +216,18 @@ class EmailMessage(models.Model):
         verbose_name_plural = _("Email Messages")
 
     @classmethod
-    def from_event(self, event_dict):
+    def from_event(cls, event_dict):
         """
         Returns a new EmailMessage instance derived from an Event Dictionary.
         """
         newsletter_id = event_dict.get("newsletter[newsletter_id]")
         to_email = event_dict.get("email")
         try:
-            emailMessage = UniqueArgument.objects.get(data=newsletter_id, argument__key="newsletter[newsletter_id]", email_message__to_email=to_email).email_message
+            emailMessage = UniqueArgument.objects.get(
+                data=newsletter_id, argument__key="newsletter[newsletter_id]",
+                email_message__to_email=to_email).email_message
         except UniqueArgument.DoesNotExist:
-            categories = [value for key,value in event_dict.items() if 'category' in key]
+            categories = [value for key, value in event_dict.items() if 'category' in key]
             emailMessageSpec = {
                 "message_id": event_dict.get("message_id", None),
                 "from_email": "",
@@ -229,7 +240,7 @@ class EmailMessage(models.Model):
             emailMessage = EmailMessage.objects.create(**emailMessageSpec)
 
             for category in categories:
-                categoryObj,created = Category.objects.get_or_create(name=category)
+                categoryObj, created = Category.objects.get_or_create(name=category)
                 emailMessage.categories.add(categoryObj)
 
             uniqueArgs = {}
@@ -237,10 +248,10 @@ class EmailMessage(models.Model):
                 uniqueArgs[key] = event_dict.get(key)
 
             for argName, argValue in uniqueArgs.items():
-                argument,_ = Argument.objects.get_or_create(
+                argument, _ = Argument.objects.get_or_create(
                     key=argName
                 )
-                uniqueArg = UniqueArgument.objects.create(
+                UniqueArgument.objects.create(
                     argument=argument,
                     email_message=emailMessage,
                     data=argValue
@@ -350,7 +361,8 @@ class EmailMessageSubjectData(models.Model):
 
 
 class EmailMessageSendGridHeadersData(models.Model):
-    email_message = models.OneToOneField(EmailMessage, primary_key=True, related_name="sendgrid_headers")
+    email_message = models.OneToOneField(
+        EmailMessage, primary_key=True, related_name="sendgrid_headers")
     data = models.TextField(_("SendGrid Headers"), editable=False)
 
     class Meta:
@@ -362,7 +374,8 @@ class EmailMessageSendGridHeadersData(models.Model):
 
 
 class EmailMessageExtraHeadersData(models.Model):
-    email_message = models.OneToOneField(EmailMessage, primary_key=True, related_name="extra_headers")
+    email_message = models.OneToOneField(
+        EmailMessage, primary_key=True, related_name="extra_headers")
     data = models.TextField(_("Extra Headers"), editable=False)
 
     class Meta:
@@ -451,7 +464,8 @@ class Event(models.Model):
     creation_time = models.DateTimeField(auto_now_add=True)
     last_modified_time = models.DateTimeField(auto_now=True)
     # this column should always be populated by sendgrids mandatory timestamp param
-    # null=True only because this was added later and need to distinguish old columns saved before this change
+    # null=True only because this was added later and need to distinguish old columns
+    # saved before this change
     timestamp = models.DateTimeField(null=True)
 
     class Meta:
@@ -478,12 +492,12 @@ class ClickEvent(Event):
         verbose_name_plural = ("Click Events")
 
     def __str__(self):
-        return u"{0} - {1}".format(super(ClickEvent,self).__str__(),self.url)
+        return u"{0} - {1}".format(super(ClickEvent, self).__str__(), self.url)
 
     def get_url(self):
         return self.click_url.url
 
-    def set_url(self,url):
+    def set_url(self, url):
         try:
             self.click_url = ClickUrl.objects.get_or_create(url=url)[0]
         except MultipleObjectsReturned:
@@ -500,7 +514,7 @@ class BounceReason(models.Model):
 
 
 class BounceType(models.Model):
-    type = models.CharField(max_length=32,unique=True)
+    type = models.CharField(max_length=32, unique=True)
 
     class Meta:
         verbose_name = _("Bounce Type")
@@ -511,17 +525,18 @@ class BounceEvent(Event):
     status = models.CharField(max_length=16)
     bounce_reason = models.ForeignKey(BounceReason, null=True)
     bounce_type = models.ForeignKey(BounceType, null=True)
+
     class Meta:
-        verbose_name = ("Bounce Event")
-        verbose_name_plural = ("Bounce Events")
+        verbose_name = _("Bounce Event")
+        verbose_name_plural = _("Bounce Events")
 
     def __str__(self):
-        return u"{0} - {1}".format(super(self,BounceEvent).__str__(), reason)
+        return u"{0} - {1}".format(super(self, BounceEvent).__str__(), self.bounce_reason)
 
     def get_reason(self):
         return self.bounce_reason.reason
 
-    def set_reason(self,reason):
+    def set_reason(self, reason):
         self.bounce_reason = BounceReason.objects.get_or_create(reason=reason)[0]
     reason = property(get_reason, set_reason)
 

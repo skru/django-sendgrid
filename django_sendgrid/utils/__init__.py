@@ -72,7 +72,8 @@ def normalize_parameters(d):
     return dCopy
 
 
-def get_unsubscribes(date=None, days=None, start_date=None, end_date=None, limit=None, offset=None, email=None):
+def get_unsubscribes(
+        date=None, days=None, start_date=None, end_date=None, limit=None, offset=None, email=None):
     """
     Returns a list of unsubscribes with addresses and optionally with dates.
     """
@@ -128,7 +129,8 @@ def add_unsubscribes(email):
 
 def delete_unsubscribes(email, start_date=None, end_date=None):
     """
-    Delete an address from the Unsubscribe list. Please note that if no parameters are provided the ENTIRE list will be removed.
+    Delete an address from the Unsubscribe list. Please note that
+    if no parameters are provided the ENTIRE list will be removed.
     """
     ENDPOINT = "https://sendgrid.com/api/unsubscribes.delete.json"
 

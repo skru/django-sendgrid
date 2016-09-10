@@ -12,7 +12,7 @@ class SmtpApiHeader:
         self.data = {}
 
     def addTo(self, to):
-        if not self.data.has_key('to'):
+        if 'to' not in self.data:
             self.data['to'] = []
         if type(to) is str:
             self.data['to'] += [to]
@@ -20,7 +20,7 @@ class SmtpApiHeader:
             self.data['to'] += to
 
     def addSubVal(self, var, val):
-        if not self.data.has_key('sub'):
+        if 'sub' not in self.data:
             self.data['sub'] = {}
         if type(val) is str:
             self.data['sub'][var] = [val]
@@ -35,11 +35,11 @@ class SmtpApiHeader:
         self.data['category'] = cat
 
     def addFilterSetting(self, fltr, setting, val):
-        if not self.data.has_key('filters'):
+        if 'filters' not in self.data:
             self.data['filters'] = {}
-        if not self.data['filters'].has_key(fltr):
+        if fltr not in self.data['filters']:
             self.data['filters'][fltr] = {}
-        if not self.data['filters'][fltr].has_key('settings'):
+        if 'settings' not in self.data['filters'][fltr]:
                 self.data['filters'][fltr]['settings'] = {}
         self.data['filters'][fltr]['settings'][setting] = val
 
