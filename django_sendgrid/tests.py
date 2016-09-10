@@ -17,6 +17,7 @@ from django_sendgrid.mail import get_sendgrid_connection
 from django_sendgrid.mail import send_sendgrid_mail
 from django_sendgrid.message import SendGridEmailMessage
 from django_sendgrid.message import SendGridEmailMultiAlternatives
+from django_sendgrid.models import EmailMessage, Event, ClickEvent, DeferredEvent, DroppedEvent, DeliverredEvent, BounceEvent, EventType  # NOQA
 from django_sendgrid.models import Argument
 from django_sendgrid.models import Category
 from django_sendgrid.models import EmailMessageAttachmentsData
@@ -235,11 +236,11 @@ class SendWithEmailMessageTest(TestCase):
         """
         Tests sending an ``EmailMessage`` with the ``SendGridEmailBackend``.
         """
-        email = EmailMessage(
-            subject="Your new account!",
-            body="Thanks for signing up.",
-            from_email='welcome@example.com',
-            to=['ryan@example.com'],
+        email = SendGridEmailMessage(
+            "Your new account!",
+            "Thanks for signing up.",
+            'welcome@example.com',
+            ['ryan@example.com'],
             connection=self.connection,
         )
         email.send()

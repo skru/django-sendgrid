@@ -1,6 +1,8 @@
 # Django settings for example_project project.
 import os
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -59,6 +61,7 @@ MEDIA_URL = ''
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 STATIC_ROOT = '/home/znaflab/webapps/djsendgrid/lib/python2.7/django/contrib/admin/media/'
+STATIC_ROOT = BASE_DIR
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"

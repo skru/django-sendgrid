@@ -201,7 +201,7 @@ def download_attachments(request, message_id):
         for name, content, contentType in obj:
             files[name] = content
 
-        response = HttpResponse(mimetype="application/x-zip")
+        response = HttpResponse(content_type="application/x-zip")
         response["Content-Disposition"] = "attachment; filename={filename}".format(
             filename="attachment.zip")
         with closing(zip_files(files)) as zio:

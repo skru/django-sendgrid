@@ -4,13 +4,6 @@ try:
     import urllib.request as urllib2
 except ImportError:
     import urllib2
-try:
-    import cStringIO as StringIO
-except ImportError:
-    try:
-        from StringIO import StringIO
-    except ImportError:
-        from io import StringIO
 
 from django.conf import settings
 from django.core import mail
@@ -162,7 +155,13 @@ def zip_files(files):
     """
     import zipfile
 
-    buffer = StringIO.StringIO()
+    try:
+        from StringIO import StringIO
+        buffer = StringIO()
+    except ImportError:
+        from io import BytesIO
+        buffer = BytesIO()
+
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zio:
         for name, content in files.items():
             zio.writestr(name, content)
