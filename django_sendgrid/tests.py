@@ -22,8 +22,7 @@ from django_sendgrid.models import EmailMessage, Event, ClickEvent, DeferredEven
 from django_sendgrid.models import Argument
 from django_sendgrid.models import Category
 from django_sendgrid.models import EmailMessageAttachmentsData
-from django_sendgrid.models import Event, EmailMessage as EmailMessageModel
-from django_sendgrid.models import EventType
+from django_sendgrid.models import EmailMessage as EmailMessageModel
 from django_sendgrid.models import UniqueArgument
 from django_sendgrid.settings import SENDGRID_CREATE_MISSING_EMAIL_MESSAGES
 from django_sendgrid.signals import sendgrid_email_sent
