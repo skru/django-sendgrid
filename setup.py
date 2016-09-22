@@ -39,6 +39,6 @@ setup(
     data_files=data_files,
     long_description=long_description,
     install_requires=[
-        'django>=1.3.1',
+        'django>=1.8.13',
     ],
 )
