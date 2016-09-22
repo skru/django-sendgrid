@@ -1,3 +1,4 @@
+import logging
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.utils.http import urlencode
@@ -5,6 +6,7 @@ from django.utils.http import urlencode
 from django_sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP
 
 client = Client()
+logger = logging.getLogger(__name__)
 
 
 def post_test_event(event_type, event_model_name, email_message):
@@ -16,7 +18,7 @@ def post_test_event(event_type, event_model_name, email_message):
     }
 
     for key in EVENT_TYPES_EXTRA_FIELDS_MAP[event_type.upper()]:
-        print("Adding Extra Field {0}".format(key))
+        logger.debug("Adding Extra Field {0}".format(key))
         if key == "attempt":
             event_data[key] = 3
         else:

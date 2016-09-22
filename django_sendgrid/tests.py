@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import logging
 
 from collections import defaultdict
 
@@ -39,6 +40,8 @@ TEST_RECIPIENTS = ["ryan@example.com"]
 validate_filter_setting_value = filterutils.validate_filter_setting_value
 validate_filter_specification = filterutils.validate_filter_specification
 update_filters = filterutils.update_filters
+
+logger = logging.getLogger(__name__)
 
 
 class SendGridEventTest(TestCase):
@@ -484,7 +487,7 @@ class EventPostTests(TestCase):
         Checks that every EXTRA_FIELD is saved
         """
         for event_type, event_model_name in EVENT_MODEL_NAMES.items():
-            print("Testing {0} event".format(event_type))
+            logger.debug("Testing {0} event".format(event_type))
             event_model = eval(
                 EVENT_MODEL_NAMES[event_type]) if event_type in EVENT_MODEL_NAMES.keys() else Event
             event_count_before = event_model.objects.count()
