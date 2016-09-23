@@ -1,0 +1,29 @@
+import logging
+from django.core.urlresolvers import reverse
+from django.test.client import Client
+from django.utils.http import urlencode
+
+from django_sendgrid.constants import EVENT_TYPES_EXTRA_FIELDS_MAP
+
+client = Client()
+logger = logging.getLogger(__name__)
+
+
+def post_test_event(event_type, event_model_name, email_message):
+    event_data = {
+        "event": event_type,
+        "message_id": email_message.message_id,
+        "email": email_message.to_email,
+        "timestamp": 1322000095
+    }
+
+    for key in EVENT_TYPES_EXTRA_FIELDS_MAP[event_type.upper()]:
+        logger.debug("Adding Extra Field {0}".format(key))
+        if key == "attempt":
+            event_data[key] = 3
+        else:
+            event_data[key] = "test_param" + key
+
+    return client.post(
+        reverse("sendgrid_post_event", args=[]), data=urlencode(event_data),
+        content_type="application/x-www-form-urlencoded; charset=utf-8")

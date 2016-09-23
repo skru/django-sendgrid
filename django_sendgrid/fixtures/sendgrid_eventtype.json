@@ -1,0 +1,72 @@
+[
+  {
+    "pk": 1,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "UNKNOWN"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "DEFERRED"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "PROCESSED"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "DROPPED"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "DELIVERED"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "BOUNCE"
+    }
+  },
+  {
+    "pk": 7,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "OPEN"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "CLICK"
+    }
+  },
+  {
+    "pk": 9,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "SPAMREPORT"
+    }
+  },
+  {
+    "pk": 10,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "UNSUBSCRIBE"
+    }
+  }
+]
