@@ -60,7 +60,6 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/home/znaflab/webapps/djsendgrid/lib/python2.7/django/contrib/admin/media/'
 STATIC_ROOT = BASE_DIR
 
 # URL prefix for static files.
@@ -129,6 +128,7 @@ INSTALLED_APPS = (
     'django_sendgrid',
     'debug_toolbar',
     'main',
+    'django_nose',
 )
 
 # A sample logging configuration. The only tangible logging

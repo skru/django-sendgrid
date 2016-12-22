@@ -30,7 +30,7 @@ from django_sendgrid.utils import filterutils
 from django_sendgrid.utils import in_test_environment
 from django_sendgrid.utils.requestfactory import RequestFactory
 from django_sendgrid.views import handle_single_event_request
-from django_sendgrid.utils.testutils import post_test_event
+from django.utils.http import urlencode
 
 
 TEST_SENDER_EMAIL = "ryan@example.com"
@@ -41,6 +41,27 @@ validate_filter_specification = filterutils.validate_filter_specification
 update_filters = filterutils.update_filters
 
 logger = logging.getLogger(__name__)
+client = Client()
+
+
+def _post_event(event_type, event_model_name, email_message):
+    event_data = {
+        "event": event_type,
+        "message_id": email_message.message_id,
+        "email": email_message.to_email,
+        "timestamp": 1322000095
+    }
+
+    for key in EVENT_TYPES_EXTRA_FIELDS_MAP[event_type.upper()]:
+        logger.debug("Adding Extra Field {0}".format(key))
+        if key == "attempt":
+            event_data[key] = 3
+        else:
+            event_data[key] = "test_param" + key
+
+    return client.post(
+        reverse("sendgrid_post_event", args=[]), data=urlencode(event_data),
+        content_type="application/x-www-form-urlencoded; charset=utf-8")
 
 
 class SendGridEventTest(TestCase):
@@ -490,7 +511,7 @@ class EventPostTests(TestCase):
             event_model = eval(
                 EVENT_MODEL_NAMES[event_type]) if event_type in EVENT_MODEL_NAMES.keys() else Event
             event_count_before = event_model.objects.count()
-            post_test_event(event_type, event_model_name, self.email_message)
+            _post_event(event_type, event_model_name, self.email_message)
             self.assertEqual(event_model.objects.count(), event_count_before+1)
             event = event_model.objects.filter(event_type__name=event_type)[0]
             for key in EVENT_TYPES_EXTRA_FIELDS_MAP[event_type.upper()]:
