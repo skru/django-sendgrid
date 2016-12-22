@@ -40,5 +40,6 @@ setup(
     long_description=long_description,
     install_requires=[
         'django>=1.8.13',
+        'six',
     ],
 )
