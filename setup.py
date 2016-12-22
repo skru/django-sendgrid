@@ -41,5 +41,6 @@ setup(
     install_requires=[
         'django>=1.8.13',
         'six',
+        'pytz',
     ],
 )
