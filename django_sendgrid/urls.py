@@ -1,9 +1,9 @@
 from __future__ import absolute_import
 
 try:
-    from django.conf.urls import patterns, include, url
+    from django.conf.urls import url
 except:
-    from django.conf.urls.defaults import patterns, include, url
+    from django.conf.urls.defaults import url
 
 from django_sendgrid import views as django_sendgrid_views
 
