@@ -137,14 +137,21 @@ class SendGridEmailMultiAlternatives(SendGridEmailMessageMixin, EmailMultiAltern
     def __init__(self, *args, **kwargs):
         self.sendgrid_headers = SmtpApiHeader()
         self._message_id = uuid.uuid4()
+
         super(SendGridEmailMultiAlternatives, self).__init__(*args, **kwargs)
 
-    def send(self, *args, **kwargs):
+    def send(self, emailgroup, *args, **kwargs):
         """Sends the email message."""
         self.prep_message_for_sending()
-
-        save_email_message(sender=self, message=self, response=None)
+        print('SEND ARGS',args,kwargs)
+        #emailgroup = kwargs.get("emailgroup", None)
+        #
+        
+        #emailgroup = getattr(emailgroup, "emailgroup", None)
+        print('SEND EG:',emailgroup)
+        save_email_message(sender=self, message=self, response=None, emailgroup=emailgroup)
         response = super(SendGridEmailMultiAlternatives, self).send(*args, **kwargs)
+        print(response)
         s = "Tried to send a multialternatives email with SendGrid and got response {r}"
         logger.debug(s.format(r=response))
         sendgrid_email_sent.send(sender=self, message=self, response=response)

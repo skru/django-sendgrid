@@ -125,32 +125,36 @@ class UniqueArgumentsInLine(admin.TabularInline):
 class EmailMessageAdmin(admin.ModelAdmin):
     date_hierarchy = "creation_time"
     list_display = (
-        "message_id",
+        "id",
+        #"message_id",
         "from_email",
         "to_email",
-        "category",
+        #"category",
         "subject_data",
         "response",
         "creation_time",
         "last_modified_time",
-        "category_count",
+        #"category_count",
         "event_count",
         "first_event_type",
         "latest_event_type",
         "unique_argument_count"
     )
-    list_filter = ("from_email", "subject__data", "category", "response")
+    list_filter = ("from_email", "subject__data", "response")
     readonly_fields = (
+        #"email_groups",
         "message_id",
         "from_email",
         "to_email",
-        "category",
+        #"category",
         "response",
-        "categories",
-        "category_count",
+        #"categories",
+        #"category_count",
         "arguments",
         "unique_argument_count"
     )
+    exclude = ['category', 'categories', 'category_count',
+        "arguments", "unique_argument_count"]
     inlines = (
         EmailMessageToDataInline,
         EmailMessageCcInline,
@@ -160,7 +164,7 @@ class EmailMessageAdmin(admin.ModelAdmin):
         EmailMessageSendGridDataInline,
         EmailMessageExtraHeadersDataInline,
         EmailMessageAttachmentsDataInline,
-        CategoryInLine,
+        #CategoryInLine,
         EventInline,
         UniqueArgumentsInLine,
     )

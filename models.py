@@ -21,6 +21,10 @@ from django_sendgrid.constants import (
 from django_sendgrid.signals import sendgrid_email_sent
 from django_sendgrid.signals import sendgrid_event_recieved
 
+##########
+from my_cms.models import EmailGroup
+##########
+
 MAX_CATEGORIES_PER_EMAIL_MESSAGE = 10
 
 DEFAULT_SENDGRID_EMAIL_TRACKING_COMPONENTS = (
@@ -32,6 +36,7 @@ DEFAULT_SENDGRID_EMAIL_TRACKING_COMPONENTS = (
     "sendgrid_headers",
     "extra_headers",
     "attachments",
+    "emailgroup",
 )
 
 SENDGRID_EMAIL_TRACKING = getattr(settings, "SENDGRID_USER_MIXIN_ENABLED", True)
@@ -66,9 +71,12 @@ def update_email_message(sender, message, response, **kwargs):
     emailMessage.save()
 
 
-def save_email_message(sender, **kwargs):
+def save_email_message(sender, emailgroup, **kwargs):
     message = kwargs.get("message", None)
     response = kwargs.get("response", None)
+    #emailgroup = kwargs.get("emailgroup", None)
+    #emailgroup = getattr(emailgroup, "emailgroup", None)
+    print('SAVE EG', emailgroup)
 
     COMPONENT_DATA_MODEL_MAP = {
         "to": EmailMessageToData,
@@ -98,6 +106,7 @@ def save_email_message(sender, **kwargs):
             msg = "The message has {n} categories which exceeds the maximum of {m}"
             logger.warn(msg.format(n=len(categories), m=MAX_CATEGORIES_PER_EMAIL_MESSAGE))
 
+
         emailMessage = EmailMessage.objects.create(
             message_id=messageId,
             from_email=fromEmail,
@@ -105,6 +114,10 @@ def save_email_message(sender, **kwargs):
             category=category,
             response=response,
         )
+
+        # add email groups:
+        for group in emailgroup:
+            emailMessage.emailgroup.add(group.id)
 
         if categories:
             for categoryName in categories:
@@ -126,18 +139,21 @@ def save_email_message(sender, **kwargs):
                 )
 
         for component, componentModel in COMPONENT_DATA_MODEL_MAP.items():
+            print(component)
             if component in SENDGRID_EMAIL_TRACKING_COMPONENTS:
+                print(component, componentModel)
                 if component == "sendgrid_headers":
                     componentData = message.sendgrid_headers.as_string()
                 else:
                     componentData = getattr(message, component, None)
-
+                print(componentData)
                 if componentData:
                     componentModel.objects.create(
                         email_message=emailMessage,
                         data=componentData,
                     )
                 else:
+                    print('NO DATA', component)
                     logger.debug("Could not get data for '{c}' component: {d}".format(
                         c=component, d=componentData))
             else:
@@ -210,6 +226,7 @@ class EmailMessage(models.Model):
     last_modified_time = models.DateTimeField(auto_now=True)
     categories = models.ManyToManyField(Category)
     arguments = models.ManyToManyField(Argument, through="UniqueArgument")
+    emailgroup = models.ManyToManyField(EmailGroup)
 
     class Meta:
         verbose_name = _("Email Message")
@@ -281,6 +298,12 @@ class EmailMessage(models.Model):
     def get_body_data(self):
         return self.body.data
     body_data = property(get_body_data)
+
+    ######
+    def get_emailgroup_data(self):
+        return self.emailgroup.data
+    emailgroup_data = property(get_emailgroup_data)
+    ######
 
     def get_extra_headers_data(self):
         return self.headers.data
@@ -396,6 +419,20 @@ class EmailMessageBodyData(models.Model):
 
     def __str__(self):
         return "{0}".format(self.email_message)
+
+#####
+# from my_cms.models import EmailGroup
+# class EmailMessageEmailGroupData(models.Model):
+#     email_message = models.OneToOneField(EmailMessage, primary_key=True, related_name="emailgroup")
+#     data = models.ManyToManyField(EmailGroup,_("EmailGroup"), editable=False)
+
+#     class Meta:
+#         verbose_name = _("Email Message EmailGroup Data")
+#         verbose_name_plural = _("Email Message EmailGroups Data")
+
+#     def __str__(self):
+#         return "{0}".format(self.email_message)#
+#####
 
 
 class EmailMessageAttachmentsData(models.Model):
