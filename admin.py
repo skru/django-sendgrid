@@ -142,7 +142,9 @@ class EmailMessageAdmin(admin.ModelAdmin):
     )
     list_filter = ("from_email", "subject__data", "response")
     readonly_fields = (
-        #"email_groups",
+        "emailgroup",
+        "template",
+        #"additional",
         "message_id",
         "from_email",
         "to_email",

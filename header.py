@@ -19,6 +19,14 @@ class SmtpApiHeader:
         else:
             self.data['to'] += to
 
+    def addAsmGroup(self, asm_group_id):
+        if 'asm_group_id' not in self.data:
+            self.data['asm_group_id'] = []
+        if type(asm_group_id) is str:
+            self.data['asm_group_id'] += [asm_group_id]
+        else:
+            self.data['asm_group_id'] = asm_group_id
+
     def addSubVal(self, var, val):
         if 'sub' not in self.data:
             self.data['sub'] = {}

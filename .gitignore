@@ -12,3 +12,4 @@ dist/*
 django_sendgrid.egg-info/*
 virtualenv
 cover/
+migrations/
