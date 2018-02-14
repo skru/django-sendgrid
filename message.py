@@ -134,22 +134,42 @@ class SendGridEmailMultiAlternatives(SendGridEmailMessageMixin, EmailMultiAltern
         verbose_name = _("SendGrid Email Multi Alternatives")
         verbose_name_plural = _("SendGrid Email Multi Alternatives")
 
-    def __init__(self, message_id, *args, **kwargs):
-        #print('EMAILALT:', message_id)
-        self._message_id = message_id
-        # self._message_id = uuid.uuid4()
+    def __init__(self, *args, **kwargs):
+        self._message_id = uuid.uuid4()
         self.sendgrid_headers = SmtpApiHeader()
-        
-
         super(SendGridEmailMultiAlternatives, self).__init__(*args, **kwargs)
 
-    def send(self, extra_data, *args, **kwargs):
+    def send(self, *args, **kwargs):
         """Sends the email message."""
         self.prep_message_for_sending()
-        save_email_message(sender=self, message=self, response=None, extra_data=extra_data)
+        save_email_message(sender=self, message=self, response=None, extra_data=None)
         response = super(SendGridEmailMultiAlternatives, self).send(*args, **kwargs)
         s = "Tried to send a multialternatives email with SendGrid and got response {r}"
         logger.debug(s.format(r=response))
         sendgrid_email_sent.send(sender=self, message=self, response=response)
 
+        return response
+
+
+class SendGridBulkEmailMultiAlternatives(SendGridEmailMessageMixin, EmailMultiAlternatives):
+    """
+    Adapts Django's ``EmailMultiAlternatives`` for use with SendGrid.
+    """
+    class Meta:
+        verbose_name = _("SendGrid Bulk Email Multi Alternatives")
+        verbose_name_plural = _("SendGrid Bulk Email Multi Alternatives")
+
+    def __init__(self, message_id, *args, **kwargs):
+        self._message_id = message_id
+        self.sendgrid_headers = SmtpApiHeader()
+        super(SendGridBulkEmailMultiAlternatives, self).__init__(*args, **kwargs)
+
+    def send(self, extra_data, *args, **kwargs):
+        """Sends the email message."""
+        self.prep_message_for_sending()
+        save_email_message(sender=self, message=self, response=None, extra_data=extra_data)
+        response = super(SendGridBulkEmailMultiAlternatives, self).send(*args, **kwargs)
+        s = "Tried to send a multialternatives email with SendGrid and got response {r}"
+        logger.debug(s.format(r=response))
+        sendgrid_email_sent.send(sender=self, message=self, response=response)
         return response

@@ -89,8 +89,7 @@ def save_email_message(sender, extra_data, **kwargs):
     if SENDGRID_EMAIL_TRACKING:
         messageId = getattr(message, "message_id", None)
         fromEmail = getattr(message, "from_email", None)
-        recipients = getattr(message, "to", None)
-        toEmail = recipients
+        #recipients = getattr(message, "to", None)
         categoryData = message.sendgrid_headers.data.get("category", None)
         
         if isinstance(categoryData, string_types):
@@ -115,12 +114,18 @@ def save_email_message(sender, extra_data, **kwargs):
         # emailMessage.response = response
 
         if created:
-                # add email groups:
-            for group in extra_data["email_group"]:
-                emailMessage.emailgroup.add(group.id)
-            emailMessage.additional = extra_data["additional"][1:-1].replace('"','')
-            emailMessage.template = extra_data["template"]
-            emailMessage.save()
+            # bulk emails have extra data to store emailgroups and additional info
+            if extra_data:
+                for group in extra_data["email_group"]:
+                    emailMessage.emailgroup.add(group.id)
+                emailMessage.additional = extra_data["additional"][1:-1].replace('"','')
+                emailMessage.template = extra_data["template"]
+                emailMessage.to_email = 'Bulk Email'
+                emailMessage.save()
+            else:
+                emailMessage.to_email = getattr(message, "to", None)[0]
+                emailMessage.template = settings.SENDGRID_STANDARD_ID
+                emailMessage.save()
 
 
             if categories:
