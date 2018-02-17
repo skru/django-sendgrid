@@ -66,9 +66,11 @@ logger = logging.getLogger(__name__)
 @receiver(sendgrid_email_sent)
 def update_email_message(sender, message, response, **kwargs):
     messageId = getattr(message, "message_id", None)
-    emailMessage = EmailMessage.objects.get(message_id=messageId)
-    emailMessage.response = response
-    emailMessage.save()
+    # allows for test emails, that are not saved.
+    if EmailMessage.objects.filter(message_id=messageId).exists():
+        emailMessage = EmailMessage.objects.get(message_id=messageId)
+        emailMessage.response = response
+        emailMessage.save()
 
 
 def save_email_message(sender, extra_data, **kwargs):
@@ -89,52 +91,26 @@ def save_email_message(sender, extra_data, **kwargs):
     if SENDGRID_EMAIL_TRACKING:
         messageId = getattr(message, "message_id", None)
         fromEmail = getattr(message, "from_email", None)
-        #recipients = getattr(message, "to", None)
-        categoryData = message.sendgrid_headers.data.get("category", None)
-        
-        if isinstance(categoryData, string_types):
-            category = categoryData
-            categories = [category]
-        else:
-            categories = categoryData
-            category = categories[0] if categories else None
 
-        if categories and len(categories) > MAX_CATEGORIES_PER_EMAIL_MESSAGE:
-            msg = "The message has {n} categories which exceeds the maximum of {m}"
-            logger.warn(msg.format(n=len(categories), m=MAX_CATEGORIES_PER_EMAIL_MESSAGE))
-
-
-        emailMessage, created = EmailMessage.objects.update_or_create(
+        emailMessage, created = EmailMessage.objects.get_or_create(
             message_id=messageId,
-            from_email=fromEmail,
         )
 
-        # emailMessage.to_email = toEmail
-        # emailMessage.category = category
-        # emailMessage.response = response
+         # bulk emails have extra data to store emailgroups and additional info
+        if extra_data:
+            emailMessage.draft = extra_data['draft']
+            for group in extra_data["email_group"]:
+                emailMessage.emailgroup.add(group.id)
+            emailMessage.additional = extra_data["additional"][1:-1].replace('"','')
+            emailMessage.template = extra_data["template"]
+            emailMessage.to_email = 'Bulk Email'
+        else:
+            emailMessage.to_email = getattr(message, "to", None)[0]
+            emailMessage.template = settings.SENDGRID_STANDARD_ID
+        emailMessage.from_email = fromEmail
+        emailMessage.save()
 
         if created:
-            # bulk emails have extra data to store emailgroups and additional info
-            if extra_data:
-                for group in extra_data["email_group"]:
-                    emailMessage.emailgroup.add(group.id)
-                emailMessage.additional = extra_data["additional"][1:-1].replace('"','')
-                emailMessage.template = extra_data["template"]
-                emailMessage.to_email = 'Bulk Email'
-                emailMessage.save()
-            else:
-                emailMessage.to_email = getattr(message, "to", None)[0]
-                emailMessage.template = settings.SENDGRID_STANDARD_ID
-                emailMessage.save()
-
-
-            if categories:
-                for categoryName in categories:
-                    category, created = Category.objects.get_or_create(name=categoryName)
-                    if created:
-                        logger.debug("Category {c} was created".format(c=category))
-                    emailMessage.categories.add(category)
-
             uniqueArgsData = message.sendgrid_headers.data.get("unique_args", None)
             if uniqueArgsData:
                 for k, v in uniqueArgsData.items():
@@ -147,31 +123,40 @@ def save_email_message(sender, extra_data, **kwargs):
                         data=v,
                     )
 
-            for component, componentModel in COMPONENT_DATA_MODEL_MAP.items():
-                if component in SENDGRID_EMAIL_TRACKING_COMPONENTS:
-                    if component == "sendgrid_headers":
-                        componentData = message.sendgrid_headers.as_string()
+        for component, componentModel in COMPONENT_DATA_MODEL_MAP.items():
+            if component in SENDGRID_EMAIL_TRACKING_COMPONENTS:
+                if component == "sendgrid_headers":
+                    componentData = message.sendgrid_headers.as_string()
+                else:
+                    componentData = getattr(message, component, None)
+                if componentData:
+                    if componentModel.objects.filter(email_message=emailMessage).exists():
+                        c = componentModel.objects.get(
+                            email_message=emailMessage,
+                        )
+                        if component =='to':
+                            componentData=','+','.join(map(str, componentData))
+
+                            c.data+=str(componentData)
+                        else:
+                            c.data = componentData
+                        c.save()
                     else:
-                        componentData = getattr(message, component, None)
-                    if componentData:
                         if component =='to':
                             componentData=','.join(map(str, componentData))
-                        componentModel.objects.create(
+                        c = componentModel.objects.create(
                             email_message=emailMessage,
-                            data=componentData,
+                            data=componentData
                         )
-                    else:
-                        logger.debug("Could not get data for '{c}' component: {d}".format(
-                            c=component, d=componentData))
-                else:
-                    logMessage = "Component {c} is not tracked"
-                    logger.debug(logMessage.format(c=component))
+                        c.save()
+                        
 
-        else:
-            emailMessageTo = EmailMessageToData.objects.get(email_message=emailMessage)
-            componentData = getattr(message, 'to', None)
-            emailMessageTo.data += ','+','.join(map(str, componentData)) 
-            emailMessageTo.save()
+                else:
+                    logger.debug("Could not get data for '{c}' component: {d}".format(
+                        c=component, d=componentData))
+            else:
+                logMessage = "Component {c} is not tracked"
+                logger.debug(logMessage.format(c=component))
 
 
 @receiver(sendgrid_event_recieved)
@@ -242,6 +227,7 @@ class EmailMessage(models.Model):
     emailgroup = models.ManyToManyField(EmailGroup)
     additional = models.TextField(editable=False, blank=True, null=True)
     template = models.CharField(max_length=256, editable=False, blank=True, null=True)
+    draft = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = _("Email Message")
@@ -491,8 +477,8 @@ class EmailMessageToData(models.Model):
     data = models.TextField(_("To"), editable=False)
 
     class Meta:
-        verbose_name = _("Email Message To Data")
-        verbose_name_plural = _("Email Message To Data")
+        verbose_name = _("Email Message Recipients")
+        verbose_name_plural = _("Email Message Recipients")
 
     def __str__(self):
         return "{0}".format(self.email_message)

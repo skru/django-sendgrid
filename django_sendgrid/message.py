@@ -167,9 +167,15 @@ class SendGridBulkEmailMultiAlternatives(SendGridEmailMessageMixin, EmailMultiAl
     def send(self, extra_data, *args, **kwargs):
         """Sends the email message."""
         self.prep_message_for_sending()
-        save_email_message(sender=self, message=self, response=None, extra_data=extra_data)
+        #save_email_message(sender=self, message=self, response=None, extra_data=extra_data)
         response = super(SendGridBulkEmailMultiAlternatives, self).send(*args, **kwargs)
         s = "Tried to send a multialternatives email with SendGrid and got response {r}"
         logger.debug(s.format(r=response))
         sendgrid_email_sent.send(sender=self, message=self, response=response)
         return response
+
+    def save(self, extra_data, *args, **kwargs):
+        """Saves the email message."""
+        self.prep_message_for_sending()
+        save_email_message(sender=self, message=self, response=None, extra_data=extra_data)
+        

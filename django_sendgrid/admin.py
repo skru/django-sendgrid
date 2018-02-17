@@ -125,20 +125,20 @@ class UniqueArgumentsInLine(admin.TabularInline):
 class EmailMessageAdmin(admin.ModelAdmin):
     date_hierarchy = "creation_time"
     list_display = (
-        "id",
-        #"message_id",
+        "subject_data",
+        'draft',
         "from_email",
         "to_email",
-        #"category",
-        "subject_data",
         "response",
         "creation_time",
-        "last_modified_time",
+        #"last_modified_time",
         #"category_count",
         "event_count",
         "first_event_type",
         "latest_event_type",
-        "unique_argument_count"
+        "recipient_count",
+        "open_count"
+        #"unique_argument_count"
     )
     list_filter = ("from_email", "subject__data", "response")
     readonly_fields = (
@@ -153,7 +153,7 @@ class EmailMessageAdmin(admin.ModelAdmin):
         #"categories",
         #"category_count",
         "arguments",
-        "unique_argument_count"
+        "unique_argument_count",
     )
     exclude = ['category', 'categories', 'category_count',
         "arguments", "unique_argument_count"]
@@ -189,6 +189,15 @@ class EmailMessageAdmin(admin.ModelAdmin):
 
     def unique_argument_count(self, emailMessage):
         return emailMessage.uniqueargument_set.count()
+
+    def recipient_count(self, instance):
+        return len(instance.to.data.split(','))
+    recipient_count.short_description = 'recipient count'
+
+    def open_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='OPEN'))
+    open_count.short_description = 'open count'
+    
 
 
 class EventAdmin(admin.ModelAdmin):
