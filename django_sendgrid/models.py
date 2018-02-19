@@ -529,8 +529,8 @@ class ClickEvent(Event):
         verbose_name = ("Click Event")
         verbose_name_plural = ("Click Events")
 
-    def __str__(self):
-        return u"{0} - {1}".format(super(ClickEvent, self).__str__(), self.url)
+    # def __str__(self):
+    #     return u"{0} - {1}".format(super(ClickEvent, self).__str__(), self.url)
 
     def get_url(self):
         return self.click_url.url
@@ -568,8 +568,8 @@ class BounceEvent(Event):
         verbose_name = _("Bounce Event")
         verbose_name_plural = _("Bounce Events")
 
-    def __str__(self):
-        return u"{0} - {1}".format(super(self, BounceEvent).__str__(), self.bounce_reason)
+    # def __str__(self):
+    #     return u"{0} - {1}".format(super(self, BounceEvent).__str__(), self.bounce_reason)
 
     def get_reason(self):
         return self.bounce_reason.reason
