@@ -18,6 +18,7 @@ EVENT_MODEL_NAMES = {
     "PROCESSED": "Event",
     "OPEN": "Event",
     "UNSUBSCRIBE": "Event",
+    "GROUP_UNSUBSCRIBE": "Event",
     "SPAMREPORT": "Event"
 }
 
@@ -31,6 +32,7 @@ EVENT_TYPES_EXTRA_FIELDS_MAP = {
     "OPEN": (),
     "CLICK": ("url", ),
     "UNSUBSCRIBE": (),
+    "GROUP_UNSUBSCRIBE": (),
     "SPAMREPORT": (),
 }
 
