@@ -68,7 +68,7 @@
     "fields": {
       "name" : "UNSUBSCRIBE"
     }
-  }
+  },
   {
     "pk": 11,
     "model": "django_sendgrid.eventtype",
