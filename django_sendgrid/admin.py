@@ -133,43 +133,71 @@ class EmailMessageAdmin(admin.ModelAdmin):
         "creation_time",
         #"last_modified_time",
         #"category_count",
-        "event_count",
-        "first_event_type",
-        "latest_event_type",
+        # "event_count",
+        # "first_event_type",
+        # "latest_event_type",
         "recipient_count",
-        "open_count"
+        # "open_count"
         #"unique_argument_count"
     )
     list_filter = ("from_email", "subject__data", "response")
     readonly_fields = (
-        "emailgroup",
-        "template",
-        #"additional",
-        "message_id",
+
         "from_email",
         "to_email",
+        "emailgroup",
+        "additional",
+        "template",
+        
+        "message_id",
+        
+        
         #"category",
         "response",
+        "draft",
+        "open_count",
+        "unknown_count",
+        "deferred_count",
+        "processed_count",
+        "dropped_count",
+        "delivered_count",
+        "bounce_count",
+        "open_count",
+        "clicke_count",
+        "unsubscribe_count",
+        "group_unsubscribe_count",
+        "spamreport_count",
+
         #"categories",
         #"category_count",
-        "arguments",
-        "unique_argument_count",
+        # "arguments",
+        # "unique_argument_count",
     )
     exclude = ['category', 'categories', 'category_count',
         "arguments", "unique_argument_count"]
-    inlines = (
-        EmailMessageToDataInline,
-        EmailMessageCcInline,
-        EmailMessageBccInline,
-        EmailMessageSubjectDataInline,
-        EmailMessageBodyDataInline,
-        EmailMessageSendGridDataInline,
-        EmailMessageExtraHeadersDataInline,
-        EmailMessageAttachmentsDataInline,
-        #CategoryInLine,
-        EventInline,
-        UniqueArgumentsInLine,
-    )
+    # inlines = (
+    #     EmailMessageToDataInline,
+    #     EmailMessageCcInline,
+    #     EmailMessageBccInline,
+    #     EmailMessageSubjectDataInline,
+    #     EmailMessageBodyDataInline,
+    #     EmailMessageSendGridDataInline,
+    #     EmailMessageExtraHeadersDataInline,
+    #     EmailMessageAttachmentsDataInline,
+    #     #CategoryInLine,
+    #     EventInline,
+    #     UniqueArgumentsInLine,
+    # )
+    # fieldsets = (
+    #     (None, {'fields': ('username', 'password')}),
+    #     (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
+    #     (_('Permissions'), 
+    #         {'fields': (
+    #             'is_active', 'is_staff', 'is_superuser',
+    #             'groups', 'user_permissions')}),
+    #     (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    #     (_('Orders'), {'fields': ('orders',)}),
+    # )
 
     def has_add_permission(self, request):
         return False
@@ -194,11 +222,50 @@ class EmailMessageAdmin(admin.ModelAdmin):
         return len(instance.to.data.split(','))
     recipient_count.short_description = 'recipient count'
 
+    def unknown_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='UNKNOWN'))
+    unknown_count.short_description = 'Unknown'
+
+    def deferred_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='DEFERRED'))
+    deferred_count.short_description = 'Deferred'
+
+    def processed_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='PROCESSED'))
+    processed_count.short_description = 'Processed'
+
+    def dropped_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='DROPPED'))
+    dropped_count.short_description = 'Dropped'
+
+    def delivered_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='DELIVERED'))
+    delivered_count.short_description = 'Delivered'
+
+    def bounce_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='BOUNCE'))
+    bounce_count.short_description = 'Bounced'
+
     def open_count(self, instance):
         return len(instance.event_set.filter(event_type__name='OPEN'))
     open_count.short_description = 'open count'
-    
 
+    def clicke_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='CLICK'))
+    clicke_count.short_description = 'Clicked'
+
+    def unsubscribe_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='UNSUBSCRIBE'))
+    unsubscribe_count.short_description = 'Unsubscribed Globally'
+
+    def group_unsubscribe_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='GROUP_UNSUBSCRIBE'))
+    group_unsubscribe_count.short_description = 'Unsubscribed Marketing'
+
+    def spamreport_count(self, instance):
+        return len(instance.event_set.filter(event_type__name='SPAMREPORT'))
+    spamreport_count.short_description = 'Reported as Spam'
+    
 
 class EventAdmin(admin.ModelAdmin):
     date_hierarchy = "creation_time"
