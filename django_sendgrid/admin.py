@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 from django.conf import settings
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from django_sendgrid.models import Argument
 from django_sendgrid.models import Category
@@ -17,6 +18,9 @@ from django_sendgrid.models import EmailMessageToData
 from django_sendgrid.models import Event
 from django_sendgrid.models import EventType
 from django_sendgrid.models import UniqueArgument
+
+# TODO: move my_cms.models EmailAddress, EmailGroup into django_sendgrid
+from my_cms.models import EmailAddress
 
 
 DEBUG_SHOW_DATA_ADMIN_MODELS = settings.DEBUG
@@ -155,18 +159,25 @@ class EmailMessageAdmin(admin.ModelAdmin):
         #"category",
         "response",
         "draft",
-        "open_count",
         "unknown_count",
         "deferred_count",
         "processed_count",
         "dropped_count",
         "delivered_count",
         "bounce_count",
+        "bounce_addresses",
         "open_count",
-        "clicke_count",
+        
+        "click_count",
         "unsubscribe_count",
+        "unsubscribe_addresses",
         "group_unsubscribe_count",
+        "group_unsubscribe_addresses",
         "spamreport_count",
+
+        
+
+
 
         #"categories",
         #"category_count",
@@ -248,11 +259,60 @@ class EmailMessageAdmin(admin.ModelAdmin):
 
     def open_count(self, instance):
         return len(instance.event_set.filter(event_type__name='OPEN'))
-    open_count.short_description = 'open count'
+    open_count.short_description = 'Opened'
 
-    def clicke_count(self, instance):
+
+
+    def bounce_addresses(self, instance):
+        sg_events = instance.event_set.filter(event_type__name='BOUNCE')
+        result = "<table>"
+        for event in sg_events:
+            if EmailAddress.objects.filter(email=event.email).exists():
+                email_address = EmailAddress.objects.get(email=event.email)
+                result += "<tr><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></tr><br>".format(settings.ADMIN_URL, 
+                email_address.id, event.email)
+            else:
+                result += "<tr>{}</tr><br>".format(event.email)
+        result += "</table>"
+        return mark_safe(result)
+    bounce_addresses.short_description = 'Bounced Addresses'
+
+    def unsubscribe_addresses(self, instance):
+        sg_events = instance.event_set.filter(event_type__name='UNSUBSCRIBE')
+        result = "<table>"
+        for event in sg_events:
+            if EmailAddress.objects.filter(email=event.email).exists():
+                email_address = EmailAddress.objects.get(email=event.email)
+                result += "<tr><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></tr><br>".format(settings.ADMIN_URL, 
+                email_address.id, event.email)
+            else:
+                result += "<tr>{}</tr><br>".format(event.email)
+        result += "</table>"
+        return mark_safe(result)
+    unsubscribe_addresses.short_description = 'Unsubscribed Globally Addresses'
+
+    def group_unsubscribe_addresses(self, instance):
+        sg_events = instance.event_set.filter(event_type__name='GROUP_UNSUBSCRIBE')
+        result = "<table>"
+        for event in sg_events:
+            if EmailAddress.objects.filter(email=event.email).exists():
+                email_address = EmailAddress.objects.get(email=event.email)
+                result += "<tr><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></tr><br>".format(settings.ADMIN_URL, 
+                email_address.id, event.email)
+            else:
+                result += "<tr>{}</tr><br>".format(event.email)
+        result += "</table>"
+        return mark_safe(result)
+    group_unsubscribe_addresses.short_description = 'Unsubscribed Marketing Addresses'
+
+
+
+
+
+
+    def click_count(self, instance):
         return len(instance.event_set.filter(event_type__name='CLICK'))
-    clicke_count.short_description = 'Clicked'
+    click_count.short_description = 'Clicked'
 
     def unsubscribe_count(self, instance):
         return len(instance.event_set.filter(event_type__name='UNSUBSCRIBE'))
