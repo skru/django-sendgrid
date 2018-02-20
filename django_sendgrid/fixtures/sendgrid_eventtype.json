@@ -69,4 +69,11 @@
       "name" : "UNSUBSCRIBE"
     }
   }
+  {
+    "pk": 11,
+    "model": "django_sendgrid.eventtype",
+    "fields": {
+      "name" : "GROUP_UNSUBSCRIBE"
+    }
+  }
 ]
