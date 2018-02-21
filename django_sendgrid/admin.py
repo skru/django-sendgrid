@@ -258,17 +258,17 @@ class EmailMessageAdmin(admin.ModelAdmin):
     delivered_count.short_description = 'Delivered'
 
     def bounce_count(self, instance):
-        eventtype = "BOUNCED"
+        eventtype = "BOUNCE"
         return show_detail(instance, eventtype)
     bounce_count.short_description = 'Bounced'
 
     def open_count(self, instance):
-        eventtype = "OPENED"
+        eventtype = "OPEN"
         return show_detail(instance, eventtype)
     open_count.short_description = 'Opened'
 
     def click_count(self, instance):
-        eventtype = "CLICKED"
+        eventtype = "CLICK"
         return show_detail(instance, eventtype)
     click_count.short_description = 'Clicked'
 
