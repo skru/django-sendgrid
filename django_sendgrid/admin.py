@@ -125,6 +125,21 @@ class UniqueArgumentsInLine(admin.TabularInline):
     def has_add_permission(self, request):
         return False
 
+def show_detail(instance, eventtype):
+    sg_events = instance.event_set.filter(event_type__name=eventtype)
+    count = len(sg_events)
+    if count >= 1:
+        result = "<br><details><summary>x {}</summary><br><table>".format(count)
+        for event in sg_events:
+            if EmailAddress.objects.filter(email=event.email).exists():
+                email_address = EmailAddress.objects.get(email=event.email)
+                result += ("<tr><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></tr><br>".
+                    format(settings.ADMIN_URL, email_address.id, event.email))
+            else:
+                result += "<tr>{}</tr><br>".format(event.email)
+        result += "</table></details>"
+        return mark_safe(result)
+    return mark_safe("<br>0")
 
 class EmailMessageAdmin(admin.ModelAdmin):
     date_hierarchy = "creation_time"
@@ -135,57 +150,34 @@ class EmailMessageAdmin(admin.ModelAdmin):
         "to_email",
         "response",
         "creation_time",
-        #"last_modified_time",
-        #"category_count",
-        # "event_count",
-        # "first_event_type",
-        # "latest_event_type",
         "recipient_count",
-        # "open_count"
-        #"unique_argument_count"
     )
-    list_filter = ("from_email", "subject__data", "response")
+    list_filter = ("from_email", "subject__data", "response", "draft")
     readonly_fields = (
-
         "from_email",
         "to_email",
         "emailgroup",
         "additional",
         "template",
-        
         "message_id",
-        
-        
-        #"category",
         "response",
         "draft",
+        "body_data",
         "unknown_count",
         "deferred_count",
         "processed_count",
         "dropped_count",
         "delivered_count",
         "bounce_count",
-        "bounce_addresses",
         "open_count",
-        
         "click_count",
         "unsubscribe_count",
-        "unsubscribe_addresses",
         "group_unsubscribe_count",
-        "group_unsubscribe_addresses",
         "spamreport_count",
-
-        
-
-
-
-        #"categories",
-        #"category_count",
-        # "arguments",
-        # "unique_argument_count",
     )
     exclude = ['category', 'categories', 'category_count',
         "arguments", "unique_argument_count"]
+
     # inlines = (
     #     EmailMessageToDataInline,
     #     EmailMessageCcInline,
@@ -233,97 +225,63 @@ class EmailMessageAdmin(admin.ModelAdmin):
         return len(instance.to.data.split(','))
     recipient_count.short_description = 'recipient count'
 
+    def body_data(self, instance):
+        return mark_safe(instance.body.data)
+    body_data.short_description = 'Content'
+
     def unknown_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='UNKNOWN'))
+        eventtype = "UNKNOWN"
+        return show_detail(instance, eventtype)
     unknown_count.short_description = 'Unknown'
 
     def deferred_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='DEFERRED'))
+        eventtype = "DEFERRED"
+        return show_detail(instance, eventtype)
     deferred_count.short_description = 'Deferred'
 
     def processed_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='PROCESSED'))
+        eventtype = "PROCESSED"
+        return show_detail(instance, eventtype)
     processed_count.short_description = 'Processed'
 
     def dropped_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='DROPPED'))
+        eventtype = "DROPPED"
+        return show_detail(instance, eventtype)
     dropped_count.short_description = 'Dropped'
 
     def delivered_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='DELIVERED'))
+        eventtype = "DELIVERED"
+        return show_detail(instance, eventtype)
     delivered_count.short_description = 'Delivered'
 
     def bounce_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='BOUNCE'))
+        eventtype = "BOUNCED"
+        return show_detail(instance, eventtype)
     bounce_count.short_description = 'Bounced'
 
     def open_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='OPEN'))
+        eventtype = "OPENED"
+        return show_detail(instance, eventtype)
     open_count.short_description = 'Opened'
 
-
-
-    def bounce_addresses(self, instance):
-        sg_events = instance.event_set.filter(event_type__name='BOUNCE')
-        result = "<table>"
-        for event in sg_events:
-            if EmailAddress.objects.filter(email=event.email).exists():
-                email_address = EmailAddress.objects.get(email=event.email)
-                result += "<tr><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></tr><br>".format(settings.ADMIN_URL, 
-                email_address.id, event.email)
-            else:
-                result += "<tr>{}</tr><br>".format(event.email)
-        result += "</table>"
-        return mark_safe(result)
-    bounce_addresses.short_description = 'Bounced Addresses'
-
-    def unsubscribe_addresses(self, instance):
-        sg_events = instance.event_set.filter(event_type__name='UNSUBSCRIBE')
-        result = "<table>"
-        for event in sg_events:
-            if EmailAddress.objects.filter(email=event.email).exists():
-                email_address = EmailAddress.objects.get(email=event.email)
-                result += "<tr><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></tr><br>".format(settings.ADMIN_URL, 
-                email_address.id, event.email)
-            else:
-                result += "<tr>{}</tr><br>".format(event.email)
-        result += "</table>"
-        return mark_safe(result)
-    unsubscribe_addresses.short_description = 'Unsubscribed Globally Addresses'
-
-    def group_unsubscribe_addresses(self, instance):
-        sg_events = instance.event_set.filter(event_type__name='GROUP_UNSUBSCRIBE')
-        result = "<table>"
-        for event in sg_events:
-            if EmailAddress.objects.filter(email=event.email).exists():
-                email_address = EmailAddress.objects.get(email=event.email)
-                result += "<tr><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></tr><br>".format(settings.ADMIN_URL, 
-                email_address.id, event.email)
-            else:
-                result += "<tr>{}</tr><br>".format(event.email)
-        result += "</table>"
-        return mark_safe(result)
-    group_unsubscribe_addresses.short_description = 'Unsubscribed Marketing Addresses'
-
-
-
-
-
-
     def click_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='CLICK'))
+        eventtype = "CLICKED"
+        return show_detail(instance, eventtype)
     click_count.short_description = 'Clicked'
 
     def unsubscribe_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='UNSUBSCRIBE'))
+        eventtype = "UNSUBSCRIBE"
+        return show_detail(instance, eventtype)
     unsubscribe_count.short_description = 'Unsubscribed Globally'
 
     def group_unsubscribe_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='GROUP_UNSUBSCRIBE'))
+        eventtype = "GROUP_UNSUBSCRIBE"
+        return show_detail(instance, eventtype)
     group_unsubscribe_count.short_description = 'Unsubscribed Marketing'
 
     def spamreport_count(self, instance):
-        return len(instance.event_set.filter(event_type__name='SPAMREPORT'))
+        eventtype = "SPAMREPORT"
+        return show_detail(instance, eventtype)
     spamreport_count.short_description = 'Reported as Spam'
     
 
