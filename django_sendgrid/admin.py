@@ -129,7 +129,7 @@ def show_detail(instance, eventtype):
     sg_events = instance.event_set.filter(event_type__name=eventtype)
     count = len(sg_events)
     if count >= 1:
-        result = "<br><details><summary>x {}</summary><br><table>".format(count)
+        result = "<br><br><details><summary>x {}</summary><br><table>".format(count)
         for event in sg_events:
             if EmailAddress.objects.filter(email=event.email).exists():
                 email_address = EmailAddress.objects.get(email=event.email)
@@ -139,7 +139,7 @@ def show_detail(instance, eventtype):
                 result += "<tr>{}</tr><br>".format(event.email)
         result += "</table></details>"
         return mark_safe(result)
-    return mark_safe("<br>0")
+    return mark_safe("<br><br>0")
 
 class EmailMessageAdmin(admin.ModelAdmin):
     date_hierarchy = "creation_time"
@@ -226,7 +226,10 @@ class EmailMessageAdmin(admin.ModelAdmin):
     recipient_count.short_description = 'recipient count'
 
     def body_data(self, instance):
-        return mark_safe(instance.body.data)
+        return mark_safe(
+            "<br><br><details><summary>show</summary><br><div style='max-width:800px; background:white;'>{}</div></details>"
+                .format(instance.body.data)
+        )
     body_data.short_description = 'Content'
 
     def unknown_count(self, instance):
