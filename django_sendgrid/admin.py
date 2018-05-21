@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from django.conf import settings
+from django.conf.urls import url
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
@@ -125,21 +126,79 @@ class UniqueArgumentsInLine(admin.TabularInline):
     def has_add_permission(self, request):
         return False
 
-def show_detail(instance, eventtype):
-    sg_events = instance.event_set.filter(event_type__name=eventtype)
+
+def show_detail(instance):
+    sg_events = instance.event_set.all().values_list("email", "event_type__name", "last_modified_time")
     count = len(sg_events)
+    a = []
     if count >= 1:
-        result = "<br><br><details><summary>x {}</summary><br><table>".format(count)
+        all_emails = EmailAddress.objects.all().values_list("email", "id")
         for event in sg_events:
-            if EmailAddress.objects.filter(email=event.email).exists():
-                email_address = EmailAddress.objects.get(email=event.email)
-                result += ("<tr><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></tr><br>".
-                    format(settings.ADMIN_URL, email_address.id, event.email))
+            if event[0] in (i[0] for i in all_emails):
+                email_id = [x for x in all_emails if event[0] in x][0][1]
+                if event[0] not in (i[0] for i in a):
+                    a.append([event[0], event[1], event[2], email_id])
+                else:
+                    x = [x for x in a if event[0] in x][0]
+
+                    if x[2] > event[2]:
+                        a.index(x)[1] = event[1]
+                        a.index(x)[2] = event[2]
+                        a.index(x)[3] = email_id
+           
+        table = "<br><a href='https://sendgrid.com/docs/API_Reference/Webhooks/event.html#-Event-Types'>sendgrid event info</a><br>"
+        event_name = ""
+        count = 0
+        header = ""
+        data = ""
+        id_list = []
+        for s in sorted(a,key=lambda l:l[1], reverse=True):
+
+            if event_name != str(s[1]):
+                if count > 0: 
+                    #header = ("<details><summary>{} x {}</summary><br><br><a href='{}/my_cms/emailaddress/?pk__in={}'><h4>Edit in EmailAddresses</h4></a><br><br>"
+                    header = ("<details><summary>{} x {}</summary><br><br><a href='{}/my_cms/filter_emailaddresses_by_id/{}/{}'><h4>Edit in EmailAddresses</h4></a><br><br>"
+                        .format(
+                            event_name,
+                            str(count), 
+                            settings.ADMIN_URL,
+                            instance.id,
+                            event_name,
+                            #",".join(id_list)
+                        )
+                    )
+                    session_key = "EMAIL_" + event_name
+                    #request.session["email_filtering"][session_key] = ",".join(id_list)
+                table+=header
+                table+=data
+                table+="</details><br>"
+                data=""
+
+                data += "<p><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></p>".format(settings.ADMIN_URL, s[3], s[0])
+                event_name = str(s[1])
+                
+                count = 1
+                id_list = []
+                id_list.append(str(s[3]))
             else:
-                result += "<tr>{}</tr><br>".format(event.email)
-        result += "</table></details>"
-        return mark_safe(result)
-    return mark_safe("<br><br>0")
+                count+=1
+                
+                data += "<p><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></p>".format(settings.ADMIN_URL, s[3], s[0])
+                id_list.append(str(s[3]))
+        table+=("<details><summary>{} x {}</summary><br><br><a href='{}/my_cms/filter_emailaddresses_by_id/{}/{}'><h4>Edit in EmailAddresses</h4></a><br><br>"
+                        .format(
+                            event_name,
+                            str(count), 
+                            settings.ADMIN_URL,
+                            instance.id,
+                            event_name,
+                            #",".join(id_list)
+                        )
+                    )
+        table+=data 
+        table+="</details><br>"   
+
+    return mark_safe(table)
 
 class EmailMessageAdmin(admin.ModelAdmin):
     date_hierarchy = "creation_time"
@@ -163,17 +222,19 @@ class EmailMessageAdmin(admin.ModelAdmin):
         "response",
         "draft",
         "body_data",
-        "unknown_count",
-        "deferred_count",
-        "processed_count",
-        "dropped_count",
-        "delivered_count",
-        "bounce_count",
-        "open_count",
-        "click_count",
-        "unsubscribe_count",
-        "group_unsubscribe_count",
-        "spamreport_count",
+        "recipient_count",
+        "sendgrid_event_data",
+        # "unknown_count",
+        # "deferred_count",
+        # "processed_count",
+        # "dropped_count",
+        # "delivered_count",
+        # "bounce_count",
+        # "open_count",
+        # "click_count",
+        # "unsubscribe_count",
+        # "group_unsubscribe_count",
+        # "spamreport_count",
     )
     exclude = ['category', 'categories', 'category_count',
         "arguments", "unique_argument_count"]
@@ -232,60 +293,68 @@ class EmailMessageAdmin(admin.ModelAdmin):
         )
     body_data.short_description = 'Content'
 
-    def unknown_count(self, instance):
-        eventtype = "UNKNOWN"
-        return show_detail(instance, eventtype)
-    unknown_count.short_description = 'Unknown'
 
-    def deferred_count(self, instance):
-        eventtype = "DEFERRED"
-        return show_detail(instance, eventtype)
-    deferred_count.short_description = 'Deferred'
+    def sendgrid_event_data(self, instance):
+        return show_detail(instance)
 
-    def processed_count(self, instance):
-        eventtype = "PROCESSED"
-        return show_detail(instance, eventtype)
-    processed_count.short_description = 'Processed'
 
-    def dropped_count(self, instance):
-        eventtype = "DROPPED"
-        return show_detail(instance, eventtype)
-    dropped_count.short_description = 'Dropped'
+    
+    #sendgrid_event_data.short_description = 'recipient data'
 
-    def delivered_count(self, instance):
-        eventtype = "DELIVERED"
-        return show_detail(instance, eventtype)
-    delivered_count.short_description = 'Delivered'
+    # def unknown_count(self, instance):
+    #     eventtype = "UNKNOWN"
+    #     return show_detail(instance, eventtype)
+    # unknown_count.short_description = 'Unknown'
 
-    def bounce_count(self, instance):
-        eventtype = "BOUNCE"
-        return show_detail(instance, eventtype)
-    bounce_count.short_description = 'Bounced'
+    # def deferred_count(self, instance):
+    #     eventtype = "DEFERRED"
+    #     return show_detail(instance, eventtype)
+    # deferred_count.short_description = 'Deferred'
 
-    def open_count(self, instance):
-        eventtype = "OPEN"
-        return show_detail(instance, eventtype)
-    open_count.short_description = 'Opened'
+    # def processed_count(self, instance):
+    #     eventtype = "PROCESSED"
+    #     return show_detail(instance, eventtype)
+    # processed_count.short_description = 'Processed'
 
-    def click_count(self, instance):
-        eventtype = "CLICK"
-        return show_detail(instance, eventtype)
-    click_count.short_description = 'Clicked'
+    # def dropped_count(self, instance):
+    #     eventtype = "DROPPED"
+    #     return show_detail(instance, eventtype)
+    # dropped_count.short_description = 'Dropped'
 
-    def unsubscribe_count(self, instance):
-        eventtype = "UNSUBSCRIBE"
-        return show_detail(instance, eventtype)
-    unsubscribe_count.short_description = 'Unsubscribed Globally'
+    # def delivered_count(self, instance):
+    #     eventtype = "DELIVERED"
+    #     return show_detail(instance, eventtype)
+    # delivered_count.short_description = 'Delivered'
 
-    def group_unsubscribe_count(self, instance):
-        eventtype = "GROUP_UNSUBSCRIBE"
-        return show_detail(instance, eventtype)
-    group_unsubscribe_count.short_description = 'Unsubscribed Marketing'
+    # def bounce_count(self, instance):
+    #     eventtype = "BOUNCE"
+    #     return show_detail(instance, eventtype)
+    # bounce_count.short_description = 'Bounced'
 
-    def spamreport_count(self, instance):
-        eventtype = "SPAMREPORT"
-        return show_detail(instance, eventtype)
-    spamreport_count.short_description = 'Reported as Spam'
+    # def open_count(self, instance):
+    #     eventtype = "OPEN"
+    #     return show_detail(instance, eventtype)
+    # open_count.short_description = 'Opened'
+
+    # def click_count(self, instance):
+    #     eventtype = "CLICK"
+    #     return show_detail(instance, eventtype)
+    # click_count.short_description = 'Clicked'
+
+    # def unsubscribe_count(self, instance):
+    #     eventtype = "UNSUBSCRIBE"
+    #     return show_detail(instance, eventtype)
+    # unsubscribe_count.short_description = 'Unsubscribed Globally'
+
+    # def group_unsubscribe_count(self, instance):
+    #     eventtype = "GROUP_UNSUBSCRIBE"
+    #     return show_detail(instance, eventtype)
+    # group_unsubscribe_count.short_description = 'Unsubscribed Marketing'
+
+    # def spamreport_count(self, instance):
+    #     eventtype = "SPAMREPORT"
+    #     return show_detail(instance, eventtype)
+    # spamreport_count.short_description = 'Reported as Spam'
     
 
 class EventAdmin(admin.ModelAdmin):

@@ -511,7 +511,8 @@ class Event(models.Model):
         verbose_name_plural = _("Events")
 
     def __str__(self):
-        return u"{0} - {1}".format(self.email_message, self.event_type)
+        #return u"{0} - {1}".format(self.email_message, self.event_type)
+        return str(self.event_type)
 
 
 class ClickUrl(models.Model):
