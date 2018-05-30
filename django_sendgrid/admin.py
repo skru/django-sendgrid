@@ -126,79 +126,88 @@ class UniqueArgumentsInLine(admin.TabularInline):
     def has_add_permission(self, request):
         return False
 
+import sys, os
 
 def show_detail(instance):
-    sg_events = instance.event_set.all().values_list("email", "event_type__name", "last_modified_time")
-    count = len(sg_events)
-    a = []
-    if count >= 1:
-        all_emails = EmailAddress.objects.all().values_list("email", "id")
-        for event in sg_events:
-            if event[0] in (i[0] for i in all_emails):
-                email_id = [x for x in all_emails if event[0] in x][0][1]
-                if event[0] not in (i[0] for i in a):
-                    a.append([event[0], event[1], event[2], email_id])
+    try:
+        sg_events = instance.event_set.all().values_list("email", "event_type__name", "last_modified_time")
+        count = len(sg_events)
+        a = []
+        if count >= 1:
+            all_emails = EmailAddress.objects.all().values_list("email", "id")
+            print(all_emails)
+            for event in sg_events:
+                if event[0] in (i[0] for i in all_emails):
+                    email_id = [x for x in all_emails if event[0] in x][0][1]
+                    if event[0] not in (i[0] for i in a):
+                        a.append([event[0], event[1], event[2], email_id])
+                    else:
+                        x = [x for x in a if event[0] in x][0]
+
+                        if x[2] > event[2]:
+
+                            a[a.index(x)][1] = event[1]
+                            a[a.index(x)][2] = event[2]
+                            a[a.index(x)][3] = email_id
+
+            table = "<br><br><a href='https://sendgrid.com/docs/API_Reference/Webhooks/event.html#-Event-Types'>sendgrid event info</a><br>"
+            event_name = ""
+            count = 0
+            header = ""
+            data = ""
+            id_list = []
+            for s in sorted(a,key=lambda l:l[1], reverse=True):
+
+                if event_name != str(s[1]):
+                    if count > 0: 
+                        #header = ("<details><summary>{} x {}</summary><br><br><a href='{}/my_cms/emailaddress/?pk__in={}'><h4>Edit in EmailAddresses</h4></a><br><br>"
+                        header = ("<details><summary>{} x {}</summary><br><br><a href='{}/my_cms/filter_emailaddresses_by_id/{}/{}'><h4>Edit in EmailAddresses</h4></a><br><br>"
+                            .format(
+                                event_name,
+                                str(count), 
+                                settings.ADMIN_URL,
+                                instance.id,
+                                event_name,
+                                #",".join(id_list)
+                            )
+                        )
+                        session_key = "EMAIL_" + event_name
+                        #request.session["email_filtering"][session_key] = ",".join(id_list)
+                    table+=header
+                    table+=data
+                    table+="</details><br>"
+                    data=""
+
+                    data += "<p><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></p>".format(settings.ADMIN_URL, s[3], s[0])
+                    event_name = str(s[1])
+
+                    count = 1
+                    id_list = []
+                    id_list.append(str(s[3]))
                 else:
-                    x = [x for x in a if event[0] in x][0]
+                    count+=1
 
-                    if x[2] > event[2]:
-                        a.index(x)[1] = event[1]
-                        a.index(x)[2] = event[2]
-                        a.index(x)[3] = email_id
-           
-        table = "<br><a href='https://sendgrid.com/docs/API_Reference/Webhooks/event.html#-Event-Types'>sendgrid event info</a><br>"
-        event_name = ""
-        count = 0
-        header = ""
-        data = ""
-        id_list = []
-        for s in sorted(a,key=lambda l:l[1], reverse=True):
+                    data += "<p><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></p>".format(settings.ADMIN_URL, s[3], s[0])
+                    id_list.append(str(s[3]))
+            table+=("<details><summary>{} x {}</summary><br><br><a href='{}/my_cms/filter_emailaddresses_by_id/{}/{}'><h4>Edit in EmailAddresses</h4></a><br><br>"
+                .format(
+                    event_name,
+                    str(count), 
+                    settings.ADMIN_URL,
+                    instance.id,
+                    event_name,
+                    #",".join(id_list)
+                )
+            )
+            table+=data 
+            table+="</details><br>"   
 
-            if event_name != str(s[1]):
-                if count > 0: 
-                    #header = ("<details><summary>{} x {}</summary><br><br><a href='{}/my_cms/emailaddress/?pk__in={}'><h4>Edit in EmailAddresses</h4></a><br><br>"
-                    header = ("<details><summary>{} x {}</summary><br><br><a href='{}/my_cms/filter_emailaddresses_by_id/{}/{}'><h4>Edit in EmailAddresses</h4></a><br><br>"
-                        .format(
-                            event_name,
-                            str(count), 
-                            settings.ADMIN_URL,
-                            instance.id,
-                            event_name,
-                            #",".join(id_list)
-                        )
-                    )
-                    session_key = "EMAIL_" + event_name
-                    #request.session["email_filtering"][session_key] = ",".join(id_list)
-                table+=header
-                table+=data
-                table+="</details><br>"
-                data=""
-
-                data += "<p><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></p>".format(settings.ADMIN_URL, s[3], s[0])
-                event_name = str(s[1])
-                
-                count = 1
-                id_list = []
-                id_list.append(str(s[3]))
-            else:
-                count+=1
-                
-                data += "<p><a href='{}/my_cms/emailaddress/{}/change/'>{}</a></p>".format(settings.ADMIN_URL, s[3], s[0])
-                id_list.append(str(s[3]))
-        table+=("<details><summary>{} x {}</summary><br><br><a href='{}/my_cms/filter_emailaddresses_by_id/{}/{}'><h4>Edit in EmailAddresses</h4></a><br><br>"
-                        .format(
-                            event_name,
-                            str(count), 
-                            settings.ADMIN_URL,
-                            instance.id,
-                            event_name,
-                            #",".join(id_list)
-                        )
-                    )
-        table+=data 
-        table+="</details><br>"   
-
-    return mark_safe(table)
+        return mark_safe(table)
+    except Exception as e:
+        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 class EmailMessageAdmin(admin.ModelAdmin):
     date_hierarchy = "creation_time"
